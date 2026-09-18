@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-display: 'Cinzel', serif;
+
+  --color-gold-50: #fbf8f2;
+  --color-gold-100: #f5eedf;
+  --color-gold-200: #ebdcb9;
+  --color-gold-300: #dec38c;
+  --color-gold-400: #d1aa62;
+  --color-gold-500: #c9854a;
+  --color-gold-600: #b8860b;
+  --color-gold-700: #936809;
+  --color-gold-800: #77520e;
+  --color-gold-900: #634310;
+
+  --color-resort-dark: #1A0C06;
+  --color-resort-card: #2A1208;
+  --color-resort-surface: #321610;
+  --color-resort-border: #4A2010;
+  --color-resort-emerald: #3D1E10;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #1A0C06;
+}
+::-webkit-scrollbar-thumb {
+  background: #4A2010;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #c9854a;
+}
+
+/* Luxury Card Glow Effect */
+.luxury-glow {
+  box-shadow: 0 0 35px -10px rgba(201, 133, 74, 0.15);
+}
+
+.gold-gradient-text {
+  background: linear-gradient(135deg, #FFF6E5 0%, #D4AF37 50%, #C9854A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-gradient-btn {
+  background: linear-gradient(135deg, #C9854A 0%, #D4AF37 100%);
+  color: #1A0C06;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+.gold-gradient-btn:hover {
+  background: linear-gradient(135deg, #D4AF37 0%, #E0A86A 100%);
+  box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+  transform: translateY(-1px);
+}

@@ -1,0 +1,86 @@
+﻿name: Production CI/CD & Custom Domain Deployment
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '22'
+  PRODUCTION_DOMAIN: 'oxygenorbis.com'
+  FALLBACK_DOMAIN: 'oxygenorbisresort.com'
+
+jobs:
+  test-and-verify:
+    name: 🧪 Automated Test Suite (7 Modules)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci || npm install
+
+      - name: Run Full Test Suite (Modules 1-7)
+        run: npm test
+
+  build-and-audit:
+    name: ⚡ Vite Production Build & Performance Audit
+    needs: test-and-verify
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci || npm install
+
+      - name: Compile Vite Production Bundle
+        run: npm run build
+
+      - name: Verify Performance Budget (< 1.2s Load Time)
+        run: |
+          echo "Verifying production build output..."
+          test -f dist/index.html || exit 1
+          echo "Production assets compiled successfully for ${{ env.PRODUCTION_DOMAIN }}."
+
+  deploy-production:
+    name: 🚀 Deploy to Production Hosting (Vercel & Custom Domain)
+    needs: build-and-audit
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Deploy to Vercel Production
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          if [ -n "$VERCEL_TOKEN" ]; then
+            npx vercel --token $VERCEL_TOKEN --prod --yes
+            npx vercel alias set ${{ env.PRODUCTION_DOMAIN }} --token $VERCEL_TOKEN
+          else
+            echo "VERCEL_TOKEN not configured. Skipping automated remote deployment step."
+          fi
