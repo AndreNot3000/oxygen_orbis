@@ -19,7 +19,7 @@ import { dispatchWhatsAppMessage, formatStaffAlertMessage } from '../services/wh
 import { RESORT_INFO, ROOMS_DATA } from '../data/resortData';
 
 // Authorized Staff Directory & Credentials for Front Desk Security Gate
-export const AUTHORIZED_STAFF_MEMBERS = [
+const AUTHORIZED_STAFF_MEMBERS = [
   {
     pin: '1974',
     name: 'Tola Adeyemi',
