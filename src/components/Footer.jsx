@@ -1,7 +1,9 @@
 import React from 'react';
 import { RESORT_INFO } from '../data/resortData';
 
-const BRAND_NAME = "OXYGEN";
+const BRAND_NAME = "OXYGEN ORBIS";
+const BRAND_LINE_1 = "OXYGEN";
+const BRAND_LINE_2 = "ORBIS";
 
 const SOCIALS = [
   { name: "Instagram", href: RESORT_INFO.instagramUrl || "https://instagram.com/oxygenorbis", external: true },
@@ -424,15 +426,25 @@ export default function Footer({ onOpenPitch, onOpenBooking, onOpenPms }) {
           }
         }
 
+        .kex-brand-stack {
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: flex-end;
+          width: 100%;
+          pointer-events: none;
+        }
+
         .kex-brand {
           position: relative;
           margin: 0;
-          padding: 0 2vw;
+          padding: 0 1vw;
           font-family: 'Inter', Arial, sans-serif;
-          font-size: clamp(80px, 17vw, 240px);
+          font-size: clamp(70px, 12vw, 180px);
           font-weight: 900;
-          line-height: 0.82;
-          letter-spacing: -0.075em;
+          line-height: 0.78;
+          letter-spacing: -0.065em;
           white-space: nowrap;
           user-select: none;
           color: transparent;
@@ -453,9 +465,20 @@ export default function Footer({ onOpenPitch, onOpenBooking, onOpenPms }) {
           filter: drop-shadow(0 25px 55px rgba(35, 12, 4, 0.5));
           opacity: 0;
           transform: translateY(105%) scaleY(1.07);
+        }
+
+        .kex-brand-1 {
+          letter-spacing: -0.065em;
           animation:
-            kex-brand-enter 1.25s 620ms cubic-bezier(0.16, 1, 0.3, 1) forwards,
+            kex-brand-enter 1.25s 560ms cubic-bezier(0.16, 1, 0.3, 1) forwards,
             kex-brand-shine 9s 2s ease-in-out infinite;
+        }
+
+        .kex-brand-2 {
+          letter-spacing: -0.025em;
+          animation:
+            kex-brand-enter 1.25s 680ms cubic-bezier(0.16, 1, 0.3, 1) forwards,
+            kex-brand-shine 9s 2.4s ease-in-out infinite;
         }
 
         .kex-brand::before {
@@ -532,7 +555,8 @@ export default function Footer({ onOpenPitch, onOpenBooking, onOpenPms }) {
             padding-bottom: 4px;
           }
           .kex-brand {
-            font-size: clamp(65px, 14vw, 155px);
+            font-size: clamp(52px, 8.8vw, 120px);
+            line-height: 0.78;
           }
         }
 
@@ -558,7 +582,8 @@ export default function Footer({ onOpenPitch, onOpenBooking, onOpenPms }) {
             padding-bottom: 4px;
           }
           .kex-brand {
-            font-size: clamp(70px, 16vw, 155px);
+            font-size: clamp(58px, 13vw, 135px);
+            line-height: 0.78;
           }
         }
 
@@ -615,9 +640,12 @@ export default function Footer({ onOpenPitch, onOpenBooking, onOpenPms }) {
             height: auto;
           }
           .kex-brand {
-            font-size: clamp(48px, 17vw, 105px);
-            letter-spacing: -0.07em;
-            line-height: 0.82;
+            font-size: clamp(54px, 16.5vw, 108px);
+            letter-spacing: -0.06em;
+            line-height: 0.78;
+          }
+          .kex-brand-2 {
+            letter-spacing: -0.02em;
           }
         }
 
@@ -635,7 +663,8 @@ export default function Footer({ onOpenPitch, onOpenBooking, onOpenPms }) {
             font-size: 11px;
           }
           .kex-brand {
-            font-size: clamp(42px, 16vw, 85px);
+            font-size: clamp(44px, 16vw, 76px);
+            line-height: 0.78;
           }
         }
 
@@ -709,9 +738,14 @@ export default function Footer({ onOpenPitch, onOpenBooking, onOpenPms }) {
         {/* Oversized Brand Area — Pinned Flush to the Bottom Edge Exactly Like NØVRA */}
         <div className="kex-brand-zone" aria-label={BRAND_NAME}>
           <div className="kex-brand-glow" />
-          <p className="kex-brand" data-brand={BRAND_NAME} aria-hidden="true">
-            {BRAND_NAME}
-          </p>
+          <div className="kex-brand-stack">
+            <p className="kex-brand kex-brand-1" data-brand={BRAND_LINE_1} aria-hidden="true">
+              {BRAND_LINE_1}
+            </p>
+            <p className="kex-brand kex-brand-2" data-brand={BRAND_LINE_2} aria-hidden="true">
+              {BRAND_LINE_2}
+            </p>
+          </div>
         </div>
       </div>
     </footer>

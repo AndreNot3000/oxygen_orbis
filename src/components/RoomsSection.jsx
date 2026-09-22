@@ -9,8 +9,9 @@ export default function RoomsSection({ currency, onBookRoom }) {
 
   const filteredRooms = ROOMS_DATA.filter((room) => {
     if (filter === 'all') return true;
-    if (filter === 'rooms') return room.id === 'deluxe-king' || room.id === 'executive-room';
-    if (filter === 'suites') return room.id === 'executive-suite' || room.id === 'presidential-suite';
+    if (filter === 'rooms') return room.category === 'rooms';
+    if (filter === 'cabins') return room.category === 'cabins';
+    if (filter === 'diplomatic') return room.category === 'diplomatic' || room.category === 'suites';
     return true;
   });
 
@@ -19,6 +20,13 @@ export default function RoomsSection({ currency, onBookRoom }) {
       return `$${room.priceUSD.toLocaleString()}`;
     }
     return `₦${room.priceNGN.toLocaleString()}`;
+  };
+
+  const formatNormalPrice = (room) => {
+    if (currency === 'USD') {
+      return `$${room.normalPriceUSD?.toLocaleString() || room.priceUSD.toLocaleString()}`;
+    }
+    return `₦${room.normalPriceNGN?.toLocaleString() || room.priceNGN.toLocaleString()}`;
   };
 
   const openDetails = (room) => {
@@ -46,7 +54,7 @@ export default function RoomsSection({ currency, onBookRoom }) {
           </p>
 
           {/* Filter Pills */}
-          <div className="flex items-center justify-center gap-2 mt-8">
+          <div className="flex flex-wrap items-center justify-center gap-2 mt-8">
             <button
               onClick={() => setFilter('all')}
               className={`px-4 py-2 rounded-full text-xs font-semibold transition ${
@@ -55,7 +63,7 @@ export default function RoomsSection({ currency, onBookRoom }) {
                   : 'bg-[#2A1208] text-[#E0C8A8] border border-[#4A2010] hover:border-[#C9854A]/40'
               }`}
             >
-              All Accommodations
+              All Accommodations (12)
             </button>
             <button
               onClick={() => setFilter('rooms')}
@@ -65,17 +73,27 @@ export default function RoomsSection({ currency, onBookRoom }) {
                   : 'bg-[#2A1208] text-[#E0C8A8] border border-[#4A2010] hover:border-[#C9854A]/40'
               }`}
             >
-              Rooms & King Beds
+              Rooms & Plus
             </button>
             <button
-              onClick={() => setFilter('suites')}
+              onClick={() => setFilter('cabins')}
               className={`px-4 py-2 rounded-full text-xs font-semibold transition ${
-                filter === 'suites'
+                filter === 'cabins'
                   ? 'bg-[#C9854A] text-black shadow-md shadow-[#C9854A]/20'
                   : 'bg-[#2A1208] text-[#E0C8A8] border border-[#4A2010] hover:border-[#C9854A]/40'
               }`}
             >
-              Luxury Suites & Penthouse
+              Chalet Cabins
+            </button>
+            <button
+              onClick={() => setFilter('diplomatic')}
+              className={`px-4 py-2 rounded-full text-xs font-semibold transition ${
+                filter === 'diplomatic'
+                  ? 'bg-[#C9854A] text-black shadow-md shadow-[#C9854A]/20'
+                  : 'bg-[#2A1208] text-[#E0C8A8] border border-[#4A2010] hover:border-[#C9854A]/40'
+              }`}
+            >
+              Diplomatic & Suites
             </button>
           </div>
         </div>
@@ -167,13 +185,25 @@ export default function RoomsSection({ currency, onBookRoom }) {
                 {/* Price & Action CTA */}
                 <div className="pt-4 border-t border-[#4A2010] flex items-center justify-between">
                   <div>
-                    <span className="text-[11px] uppercase tracking-wider text-[#C9A070] block">Nightly Rate</span>
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#C9854A] px-2 py-0.5 rounded bg-[#C9854A]/10 border border-[#C9854A]/20">
+                        Promo Rate
+                      </span>
+                      {room.normalPriceNGN && room.normalPriceNGN > room.priceNGN && (
+                        <span className="text-xs text-[#C9A070]/60 line-through">
+                          {formatNormalPrice(room)}
+                        </span>
+                      )}
+                    </div>
                     <div className="flex items-baseline gap-1">
                       <span className="font-serif text-2xl sm:text-3xl font-bold text-white">
                         {formatPrice(room)}
                       </span>
                       <span className="text-xs text-[#C9A070]">/ night</span>
                     </div>
+                    <span className="text-[10.5px] text-emerald-400 flex items-center gap-1 font-medium mt-1">
+                      <Check className="w-3 h-3 text-emerald-400" /> Breakfast &amp; VAT Included
+                    </span>
                   </div>
 
                   <div className="flex items-center gap-2">
@@ -297,20 +327,32 @@ export default function RoomsSection({ currency, onBookRoom }) {
 
               {/* Policies */}
               <div className="p-4 rounded-xl bg-[#1A0C06] border border-[#4A2010] text-xs text-[#C9A070] space-y-1">
-                <p className="font-medium text-[#E0C8A8]">Hotel Policies & Check-In:</p>
-                <p>• Standard Check-in: 12:00 PM | Check-out: 12:00 PM (Late check-out available).</p>
-                <p>• 24/7 Power guaranteed with auto-switch industrial generators.</p>
-                <p>• Payment by Debit/Credit Card or Direct Bank Transfer (Cash not accepted for rooms).</p>
+                <p className="font-medium text-[#E0C8A8]">Official Resort Policies &amp; Inclusions:</p>
+                <p>• Official Check-in: 2:00 PM | Check-out: 12:00 Noon (Late check-out attracts additional charges).</p>
+                <p>• All rates inclusive of Complimentary Breakfast, VAT &amp; Service Charge (10%).</p>
+                <p>• Guest limit: Not more than 2 persons are permitted to lodge per room.</p>
+                <p>• Strictly non-smoking inside all rooms, chalets, and suites.</p>
+                <p>• 24/7 Guaranteed power with seamless industrial generators.</p>
               </div>
 
               {/* Bottom Action */}
               <div className="pt-4 border-t border-[#4A2010] flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] uppercase tracking-wider text-[#C9A070] block">Total from</span>
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <span className="text-[10px] uppercase tracking-wider text-[#C9854A] font-bold">Promo Rate</span>
+                    {selectedRoomModal.normalPriceNGN && selectedRoomModal.normalPriceNGN > selectedRoomModal.priceNGN && (
+                      <span className="text-xs text-[#C9A070]/60 line-through">
+                        {formatNormalPrice(selectedRoomModal)}
+                      </span>
+                    )}
+                  </div>
                   <div className="font-serif text-3xl font-bold text-white">
                     {formatPrice(selectedRoomModal)}
                     <span className="text-xs font-sans text-[#C9A070] font-normal"> / night</span>
                   </div>
+                  <span className="text-[10.5px] text-emerald-400 flex items-center gap-1 font-medium mt-0.5">
+                    <Check className="w-3 h-3 text-emerald-400" /> Complimentary Breakfast Included
+                  </span>
                 </div>
 
                 <div className="flex items-center gap-3">

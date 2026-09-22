@@ -6,7 +6,19 @@
 
 export const DEFAULT_RATE_RULES = {
   baseRates: {
+    'standard-room': 33000,
+    'single-cabin': 35000,
+    'classic-room': 38000,
+    'standard-plus': 40000,
+    'classic-plus': 45000,
     'deluxe-king': 48000,
+    'deluxe-plus': 55000,
+    'diplomatic-room': 60000,
+    'diplomatic-plus': 65000,
+    'junior-cabin': 80000,
+    'executive-suite': 83000,
+    'senior-cabin': 100000,
+    // Legacy keys for backwards-compatibility with test suites
     'executive-room': 72000,
     'presidential-suite': 145000,
   },

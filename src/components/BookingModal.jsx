@@ -471,7 +471,7 @@ Please review our reservation and digital check-in pass!`;
                   <label className="text-[11px] font-semibold uppercase text-[#C5A880] block flex items-center gap-1">
                     <Users className="w-3.5 h-3.5" /> Total Guests
                   </label>
-                  <span className="text-xs text-slate-400">Accommodates adults & children</span>
+                  <span className="text-xs text-slate-400">Max 2 persons per room (Resort Policy)</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <button
@@ -484,7 +484,7 @@ Please review our reservation and digital check-in pass!`;
                   <span className="font-bold text-base text-white">{guests}</span>
                   <button
                     type="button"
-                    onClick={() => setGuests(Math.min(room.maxGuests, guests + 1))}
+                    onClick={() => setGuests(Math.min(room.maxGuests || 2, guests + 1))}
                     className="w-8 h-8 rounded-lg bg-[#172430] border border-[#243546] text-slate-200 hover:text-white flex items-center justify-center font-bold"
                   >
                     +
@@ -524,6 +524,16 @@ Please review our reservation and digital check-in pass!`;
                         </div>
 
                         <div className="text-right">
+                          <div className="flex items-center justify-end gap-1 mb-0.5">
+                            <span className="text-[9px] font-bold uppercase text-[#C5A880] bg-[#C5A880]/15 px-1.5 py-0.5 rounded">
+                              Promo
+                            </span>
+                            {r.normalPriceNGN && r.normalPriceNGN > r.priceNGN && (
+                              <span className="text-[11px] text-slate-500 line-through">
+                                {currency === 'USD' ? `$${r.normalPriceUSD}` : `₦${r.normalPriceNGN.toLocaleString()}`}
+                              </span>
+                            )}
+                          </div>
                           <span className="font-serif text-base font-bold text-white block">
                             {currency === 'USD' ? `$${r.priceUSD}` : `₦${r.priceNGN.toLocaleString()}`}
                           </span>
@@ -1279,11 +1289,11 @@ Please review our reservation and digital check-in pass!`;
                   </div>
                   <div>
                     <span className="text-[10px] text-slate-400 uppercase block">Check-In</span>
-                    <span className="font-semibold text-white">{checkIn || 'From 12:00 PM'}</span>
+                    <span className="font-semibold text-white">{checkIn ? `${checkIn} (From 2:00 PM)` : 'From 2:00 PM'}</span>
                   </div>
                   <div>
                     <span className="text-[10px] text-slate-400 uppercase block">Check-Out</span>
-                    <span className="font-semibold text-white">{checkOut || 'Until 12:00 PM'}</span>
+                    <span className="font-semibold text-white">{checkOut ? `${checkOut} (Until 12:00 Noon)` : 'Until 12:00 Noon'}</span>
                   </div>
                 </div>
 
