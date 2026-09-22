@@ -55,6 +55,7 @@ export default function Hero({
         height: window.innerHeight,
       });
     };
+    handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -159,14 +160,6 @@ export default function Hero({
 
   const finalWidth = Math.min(calculatedWidth, viewport.width * 0.95);
   const finalHeight = Math.min(calculatedHeight, viewport.height * 0.85);
-
-  // Safe dynamic vertical position for scroll indicator:
-  // Clamped on mobile so it is always comfortably visible and never collides with bottom buttons
-  const displayedMediaHeight = finalHeight;
-  const naturalIndicatorTop = viewport.height / 2 + displayedMediaHeight / 2 + 28;
-  const indicatorTop = isMobile 
-    ? Math.min(naturalIndicatorTop, viewport.height - 84)
-    : naturalIndicatorTop;
 
   // Title translation calculations (Desktop: 150vw, Mobile: 180vw)
   const titleTravelVw = isMobile ? 180 : 150;
@@ -275,15 +268,14 @@ export default function Hero({
 
         {/* Responsive Scroll / Swipe Indicator (Mobile & Desktop) */}
         <div
-          className="absolute left-1/2 -translate-x-1/2 z-30 pointer-events-none flex flex-col items-center justify-center gap-2.5 text-white transition-all duration-300 ease-out"
+          className="absolute bottom-6 sm:bottom-8 lg:bottom-10 left-0 right-0 mx-auto w-fit z-30 pointer-events-none flex flex-col items-center justify-center gap-2.5 text-white transition-opacity duration-300 ease-out"
           style={{
-            top: `${indicatorTop}px`,
             opacity: progress > 0.14 ? 0 : 1 - progress / 0.14,
-            transform: `translateX(-50%) translateY(${progress > 0.14 ? 14 : (progress / 0.14) * 14}px)`,
+            transform: `translateY(${progress > 0.14 ? 12 : (progress / 0.14) * 12}px)`,
           }}
         >
           {/* Shimmering Animated Label */}
-          <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.32em] bg-gradient-to-r from-white via-[#E0A86A] to-white bg-clip-text text-transparent drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+          <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.32em] pl-[0.32em] text-center bg-gradient-to-r from-white via-[#E0A86A] to-white bg-clip-text text-transparent drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
             {isMobile ? 'SWIPE TO EXPLORE' : 'SCROLL TO EXPLORE'}
           </span>
 
