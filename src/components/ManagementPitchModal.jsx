@@ -100,9 +100,14 @@ export default function ManagementPitchModal({ isOpen, onClose }) {
             <X className="w-5 h-5" />
           </button>
 
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#C5A880]/20 border border-[#C5A880]/50 text-xs font-bold text-[#C5A880] mb-3">
-            <Award className="w-3.5 h-3.5" />
-            <span>MODULE 6: REVENUE ANALYTICS & DIRECT BOOKING ROI</span>
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 rounded-2xl bg-[#2A1208] border border-[#C9854A]/40 p-1.5 flex items-center justify-center shrink-0 shadow-lg">
+              <img src="/logo.png" alt="Oxygen Orbis Logo" className="w-full h-full object-contain" />
+            </div>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#C5A880]/20 border border-[#C5A880]/50 text-xs font-bold text-[#C5A880]">
+              <Award className="w-3.5 h-3.5" />
+              <span>MODULE 6: REVENUE ANALYTICS & DIRECT BOOKING ROI</span>
+            </div>
           </div>
 
           <h2 className="font-serif text-2xl sm:text-4xl font-bold text-white mb-2">

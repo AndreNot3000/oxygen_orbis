@@ -739,6 +739,13 @@ export default function Footer({ onOpenPitch, onOpenBooking, onOpenPms }) {
         <div className="kex-brand-zone" aria-label={BRAND_NAME}>
           <div className="kex-brand-glow" />
           <div className="kex-brand-stack">
+            <div className="mb-2 sm:mb-3 flex items-center justify-center pointer-events-auto">
+              <img 
+                src="/logo.png" 
+                alt="Oxygen Orbis Insignia" 
+                className="w-12 h-12 sm:w-16 sm:h-16 object-contain drop-shadow-[0_0_25px_rgba(201,133,74,0.4)] hover:scale-110 transition-transform duration-500 cursor-pointer" 
+              />
+            </div>
             <p className="kex-brand kex-brand-1" data-brand={BRAND_LINE_1} aria-hidden="true">
               {BRAND_LINE_1}
             </p>

@@ -392,16 +392,21 @@ Please review our reservation and digital check-in pass!`;
         
         {/* Modal Header */}
         <div className="p-5 sm:p-6 border-b border-[#243546] flex items-center justify-between sticky top-0 bg-[#111B24]/95 backdrop-blur-md z-20">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span className="text-[11px] uppercase tracking-wider text-[#C5A880] font-semibold">
-                Direct Booking Engine
-              </span>
+          <div className="flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-2xl bg-[#1A0C06] border border-[#C9854A]/40 p-1.5 flex items-center justify-center shrink-0 shadow-md">
+              <img src="/logo.png" alt="Oxygen Orbis" className="w-full h-full object-contain" />
             </div>
-            <h2 className="font-serif text-xl sm:text-2xl font-bold text-white">
-              {step === 4 ? 'Reservation Confirmed!' : 'Reserve Your Staycation'}
-            </h2>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span className="text-[11px] uppercase tracking-wider text-[#C5A880] font-semibold">
+                  Direct Booking Engine
+                </span>
+              </div>
+              <h2 className="font-serif text-xl sm:text-2xl font-bold text-white">
+                {step === 4 ? 'Reservation Confirmed!' : 'Reserve Your Staycation'}
+              </h2>
+            </div>
           </div>
 
           <button
@@ -1240,9 +1245,12 @@ Please review our reservation and digital check-in pass!`;
               <div className="max-w-md mx-auto bg-gradient-to-b from-[#172430] to-[#0A1118] border border-[#C5A880]/60 rounded-3xl p-6 text-left shadow-2xl relative overflow-hidden">
                 {/* Decorative header */}
                 <div className="flex items-center justify-between pb-4 border-b border-[#243546] mb-4">
-                  <div>
-                    <h4 className="font-serif font-bold text-white tracking-wider">OXYGEN ORBIS</h4>
-                    <p className="text-[9px] uppercase tracking-widest text-[#C5A880]">Moniya, Ibadan • Guest Stay Pass</p>
+                  <div className="flex items-center gap-3">
+                    <img src="/logo.png" alt="Oxygen Orbis" className="w-9 h-9 object-contain" />
+                    <div>
+                      <h4 className="font-serif font-bold text-white tracking-wider">OXYGEN ORBIS</h4>
+                      <p className="text-[9px] uppercase tracking-widest text-[#C5A880]">Moniya, Ibadan • Guest Stay Pass</p>
+                    </div>
                   </div>
                   <div className="text-right">
                     <span className="text-[10px] text-slate-400 block">Booking Reference</span>

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 150" width="150" height="150">
+  <defs>
+    <!-- Left shape cut by right circle -->
+    <mask id="cutRight">
+      <rect width="150" height="150" fill="white" />
+      <circle cx="103" cy="68" r="30.5" fill="black" />
+    </mask>
+  </defs>
+
+  <!-- Left caramel solid orb with concave right edge -->
+  <circle cx="47" cy="68" r="30.5" fill="#A86834" mask="url(#cutRight)" />
+
+  <!-- Right outer chocolate ring (opening towards left) -->
+  <circle cx="103" cy="68" r="26.5" fill="none" stroke="#5A121C" stroke-width="8" stroke-dasharray="142 50" stroke-dashoffset="-25" />
+
+  <!-- Right inner chocolate orb -->
+  <circle cx="103" cy="68" r="14" fill="#5A121C" />
+
+  <!-- Brand Typography -->
+  <text x="75" y="121" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-size="9.5" font-weight="800" letter-spacing="0.12em" fill="#3D1208" text-anchor="middle">OXYGEN ORBIS</text>
+</svg>

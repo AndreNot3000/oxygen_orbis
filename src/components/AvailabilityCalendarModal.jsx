@@ -121,16 +121,21 @@ export default function AvailabilityCalendarModal({
         
         {/* Header */}
         <div className="p-5 sm:p-6 border-b border-[#243546] flex items-center justify-between sticky top-0 bg-[#111B24]/95 backdrop-blur-md z-20">
-          <div>
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-[#C5A880]" />
-              <span className="text-[11px] uppercase tracking-wider text-[#C5A880] font-bold">
-                Live Rate & Availability Matrix
-              </span>
+          <div className="flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-2xl bg-[#1A0C06] border border-[#C9854A]/40 p-1.5 flex items-center justify-center shrink-0 shadow-md">
+              <img src="/logo.png" alt="Oxygen Orbis" className="w-full h-full object-contain" />
             </div>
-            <h2 className="font-serif text-xl sm:text-2xl font-bold text-white">
-              Select Your Staycation Dates
-            </h2>
+            <div>
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-[#C5A880]" />
+                <span className="text-[11px] uppercase tracking-wider text-[#C5A880] font-bold">
+                  Live Rate & Availability Matrix
+                </span>
+              </div>
+              <h2 className="font-serif text-xl sm:text-2xl font-bold text-white">
+                Check Room Availability & Staycation Dates
+              </h2>
+            </div>
           </div>
 
           <button

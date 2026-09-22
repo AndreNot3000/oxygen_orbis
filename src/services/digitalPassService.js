@@ -277,9 +277,12 @@ export function generatePrintableVoucherHtml(booking, qrDataUrl = '') {
 <body>
   <div class="voucher-card">
     <div class="header">
-      <div>
-        <h1 class="brand-title">OXYGEN ORBIS</h1>
-        <div class="brand-sub">Hotel & Resort • Moniya, Ibadan</div>
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <img src="/logo.png" alt="Oxygen Orbis Logo" style="width: 44px; height: 44px; object-fit: contain;" />
+        <div>
+          <h1 class="brand-title">OXYGEN ORBIS</h1>
+          <div class="brand-sub">Hotel & Resort • Moniya, Ibadan</div>
+        </div>
       </div>
       <div class="ref-box">
         <div class="ref-code">#${reference}</div>

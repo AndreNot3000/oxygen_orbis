@@ -302,8 +302,8 @@ export default function StaffPortalModal({ isOpen, onClose }) {
         {/* Top Header */}
         <div className="p-4 sm:p-5 border-b border-[#243546] bg-[#111B24] flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#C5A880] to-[#8C7147] p-0.5 flex items-center justify-center text-black font-bold shadow-md">
-              <Shield className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-xl bg-[#2A1208] border border-[#C9854A]/40 p-1 flex items-center justify-center shadow-md">
+              <img src="/logo.png" alt="Oxygen Orbis Logo" className="w-8 h-8 object-contain" />
             </div>
             <div>
               <div className="flex items-center gap-2">

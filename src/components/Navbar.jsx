@@ -75,8 +75,12 @@ export default function Navbar({
           
           {/* Brand Logo */}
           <a href="#" className="flex items-center gap-3.5 group">
-            <div className="w-10 h-10 rounded-full border border-[#C9854A]/40 bg-gradient-to-br from-[#C9854A]/15 via-transparent to-transparent flex items-center justify-center shadow-[0_0_20px_rgba(201,133,74,0.12)] group-hover:border-[#C9854A] transition-all duration-300">
-              <span className="font-serif text-lg font-light text-[#E0A86A] tracking-wider">O</span>
+            <div className="w-11 h-11 rounded-full border border-[#C9854A]/40 bg-gradient-to-br from-[#2A1208] to-[#120601] p-1.5 flex items-center justify-center shadow-[0_0_20px_rgba(201,133,74,0.18)] group-hover:border-[#C9854A] group-hover:shadow-[0_0_25px_rgba(201,133,74,0.35)] transition-all duration-300">
+              <img 
+                src="/logo.png" 
+                alt="Oxygen Orbis Logo" 
+                className="w-full h-full object-contain filter drop-shadow group-hover:scale-105 transition-transform duration-300" 
+              />
             </div>
             <div className="flex flex-col">
               <span className="font-serif text-[17px] tracking-[0.24em] text-white font-normal group-hover:text-[#E0A86A] transition-colors leading-tight">
@@ -215,6 +219,18 @@ export default function Navbar({
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden bg-[#120601]/98 backdrop-blur-2xl border-b border-white/[0.08] px-6 py-6 space-y-5 animate-in slide-in-from-top duration-300 shadow-2xl">
+          <div className="flex items-center gap-3 pb-4 border-b border-[#C9854A]/[0.15]">
+            <img src="/logo.png" alt="Oxygen Orbis Logo" className="w-9 h-9 object-contain" />
+            <div className="flex flex-col">
+              <span className="font-serif text-[16px] tracking-[0.2em] text-white font-normal">
+                OXYGEN ORBIS
+              </span>
+              <span className="text-[8px] tracking-[0.3em] text-[#C9854A] uppercase font-light">
+                Hotel & Resort • Moniya
+              </span>
+            </div>
+          </div>
+
           <div className="flex items-center justify-between pb-4 border-b border-[#C9854A]/[0.15]">
             <span className="text-xs uppercase tracking-widest text-[#C9A070]">Currency</span>
             <div className="bg-white/[0.03] border border-white/[0.08] rounded-full p-0.5 flex items-center text-xs">

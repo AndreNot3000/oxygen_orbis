@@ -217,12 +217,15 @@ export function generateLuxuryInvoiceHtml(booking) {
 <body>
   <div class="invoice-wrapper">
     <div class="header">
-      <div>
-        <h1 class="brand-title">OXYGEN ORBIS</h1>
-        <div class="brand-sub">Hotel & Resort • Moniya, Ibadan</div>
-        <div style="font-size: 11px; color: #94A3B8; margin-top: 8px;">
-          ${RESORT_INFO.address}<br>
-          Tel: ${RESORT_INFO.phone} • reservations@oxygenorbis.com
+      <div style="display: flex; align-items: flex-start; gap: 14px;">
+        <img src="/logo.png" alt="Oxygen Orbis Logo" style="width: 52px; height: 52px; object-fit: contain; margin-top: 2px;" />
+        <div>
+          <h1 class="brand-title">OXYGEN ORBIS</h1>
+          <div class="brand-sub">Hotel & Resort • Moniya, Ibadan</div>
+          <div style="font-size: 11px; color: #94A3B8; margin-top: 8px;">
+            ${RESORT_INFO.address}<br>
+            Tel: ${RESORT_INFO.phone} • reservations@oxygenorbis.com
+          </div>
         </div>
       </div>
       <div class="meta-box">
