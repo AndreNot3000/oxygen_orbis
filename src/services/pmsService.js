@@ -56,7 +56,44 @@ export const INITIAL_ROOM_UNITS = [
 ];
 
 /**
+ * Formats a local date as 'YYYY-MM-DD' with an optional day offset relative to a target date
+ */
+export function getRelativeDateStr(offsetDays = 0, baseDate = new Date()) {
+  const d = new Date(baseDate);
+  d.setDate(d.getDate() + offsetDays);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+/**
+ * Dynamically generates 7-day timeline window starting from the actual current date
+ */
+export function generateTimelineDates(startDate = new Date()) {
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const dates = [];
+
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(startDate);
+    d.setDate(startDate.getDate() + i);
+    const dayOfWeek = days[d.getDay()];
+    const dateStr = getRelativeDateStr(i, startDate);
+
+    dates.push({
+      label: i === 0 ? `Today (${dayOfWeek})` : dayOfWeek,
+      dayOfWeek,
+      dateStr,
+      isToday: i === 0,
+    });
+  }
+
+  return dates;
+}
+
+/**
  * Pre-seeded reservations for the Front Desk PMS Timeline
+ * Anchored dynamically to the actual current date so in-house and upcoming stays always show accurately
  */
 export const INITIAL_PMS_RESERVATIONS = [
   {
@@ -68,8 +105,8 @@ export const INITIAL_PMS_RESERVATIONS = [
     roomTypeId: 'deluxe-king',
     roomTypeName: 'Deluxe Room',
     unitNumber: '204',
-    checkIn: '2026-10-02',
-    checkOut: '2026-10-04',
+    checkIn: getRelativeDateStr(0),
+    checkOut: getRelativeDateStr(2),
     nights: 2,
     guests: 2,
     totalAmount: 110400,
@@ -87,8 +124,8 @@ export const INITIAL_PMS_RESERVATIONS = [
     roomTypeId: 'standard-room',
     roomTypeName: 'Standard Room',
     unitNumber: '102',
-    checkIn: '2026-09-30',
-    checkOut: '2026-10-03',
+    checkIn: getRelativeDateStr(-2),
+    checkOut: getRelativeDateStr(1),
     nights: 3,
     guests: 2,
     totalAmount: 99000,
@@ -105,8 +142,8 @@ export const INITIAL_PMS_RESERVATIONS = [
     roomTypeId: 'senior-cabin',
     roomTypeName: 'Senior Cabin',
     unitNumber: '401',
-    checkIn: '2026-10-01',
-    checkOut: '2026-10-05',
+    checkIn: getRelativeDateStr(-1),
+    checkOut: getRelativeDateStr(3),
     nights: 4,
     guests: 4,
     totalAmount: 400000,

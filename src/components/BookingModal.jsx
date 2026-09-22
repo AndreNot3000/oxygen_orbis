@@ -13,6 +13,7 @@ import { validateReceiptFile, createPendingBankTransferSubmission } from '../ser
 import { generatePrintableVoucherHtml } from '../services/digitalPassService';
 import { generateLuxuryInvoiceHtml } from '../services/invoiceService';
 import { calculateStayDynamicQuote } from '../services/revenueService';
+import { getRelativeDateStr } from '../services/pmsService';
 
 export default function BookingModal({ isOpen, onClose, initialData, currency }) {
   if (!isOpen) return null;
@@ -335,8 +336,8 @@ Please review our reservation and digital check-in pass!`;
       guestPhone: guestPhone || RESORT_INFO.phone,
       roomName: room.name,
       roomUnit: assignedRoomUnit || 'Room 204',
-      checkIn: checkIn || '2026-10-02',
-      checkOut: checkOut || '2026-10-04',
+      checkIn: checkIn || getRelativeDateStr(0),
+      checkOut: checkOut || getRelativeDateStr(2),
       nights,
       guests,
       totalFormatted: formatAmount(grandTotal),
@@ -358,8 +359,8 @@ Please review our reservation and digital check-in pass!`;
       guestPhone: guestPhone || RESORT_INFO.phone,
       roomName: room.name,
       roomUnit: assignedRoomUnit || 'Room 204',
-      checkIn: checkIn || '2026-10-02',
-      checkOut: checkOut || '2026-10-04',
+      checkIn: checkIn || getRelativeDateStr(0),
+      checkOut: checkOut || getRelativeDateStr(2),
       nights,
       roomPricePerNight: currency === 'USD' ? room.priceUSD : room.priceNGN,
       addons: selectedAddons.map((id) => {

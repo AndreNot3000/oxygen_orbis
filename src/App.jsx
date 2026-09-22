@@ -36,7 +36,11 @@ export default function App() {
   // URL Hash (#staff, #pms) and global keyboard shortcut (Ctrl+Shift+P) for staff terminal
   useEffect(() => {
     const checkHash = () => {
-      if (window.location.hash === '#staff' || window.location.hash === '#pms') {
+      if (
+        window.location.hash.startsWith('#staff') || 
+        window.location.hash.startsWith('#pms') ||
+        window.location.search.includes('staff')
+      ) {
         setIsPmsOpen(true);
       }
     };

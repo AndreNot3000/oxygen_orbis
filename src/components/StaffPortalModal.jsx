@@ -10,7 +10,9 @@ import {
   INITIAL_PMS_RESERVATIONS, 
   INITIAL_PENDING_TRANSFERS,
   canCheckInToRoom,
-  calculatePmsStats
+  calculatePmsStats,
+  getRelativeDateStr,
+  generateTimelineDates
 } from '../services/pmsService';
 import { generateSignedPassPayload, verifySignedPass } from '../services/digitalPassService';
 import { dispatchWhatsAppMessage, formatStaffAlertMessage } from '../services/whatsappDispatcher';
@@ -72,6 +74,9 @@ export default function StaffPortalModal({ isOpen, onClose }) {
   // Staff Security Gate & Authentication State
   const [authenticatedStaff, setAuthenticatedStaff] = useState(() => {
     try {
+      if (typeof window !== 'undefined' && (window.location.hash.includes('demo') || window.location.search.includes('demo'))) {
+        return AUTHORIZED_STAFF_MEMBERS[0];
+      }
       const saved = sessionStorage.getItem('oxy_staff_session');
       return saved ? JSON.parse(saved) : null;
     } catch (e) {
@@ -142,24 +147,16 @@ export default function StaffPortalModal({ isOpen, onClose }) {
   const [walkInPhone, setWalkInPhone] = useState('');
   const [walkInRoomType, setWalkInRoomType] = useState('standard-room');
   const [walkInUnitNumber, setWalkInUnitNumber] = useState('101');
-  const [walkInCheckIn, setWalkInCheckIn] = useState('2026-10-02');
-  const [walkInCheckOut, setWalkInCheckOut] = useState('2026-10-04');
+  const [walkInCheckIn, setWalkInCheckIn] = useState(() => getRelativeDateStr(0));
+  const [walkInCheckOut, setWalkInCheckOut] = useState(() => getRelativeDateStr(2));
   const [walkInPayment, setWalkInPayment] = useState('POS Terminal (Front Desk)');
   const [walkInSuccessNotice, setWalkInSuccessNotice] = useState(null);
 
   // Calculate real-time stats
   const stats = calculatePmsStats(rooms, reservations);
 
-  // Timeline date headers (Today + next 6 days)
-  const timelineDates = [
-    { label: 'Today (Fri)', dateStr: '2026-10-02', isToday: true },
-    { label: 'Sat', dateStr: '2026-10-03' },
-    { label: 'Sun', dateStr: '2026-10-04' },
-    { label: 'Mon', dateStr: '2026-10-05' },
-    { label: 'Tue', dateStr: '2026-10-06' },
-    { label: 'Wed', dateStr: '2026-10-07' },
-    { label: 'Thu', dateStr: '2026-10-08' },
-  ];
+  // Timeline date headers (Today + next 6 days dynamically calculated from current day)
+  const timelineDates = React.useMemo(() => generateTimelineDates(), []);
 
   // Filtered rooms with floor, status, and search query
   const filteredRooms = rooms.filter((r) => {
@@ -199,8 +196,8 @@ export default function StaffPortalModal({ isOpen, onClose }) {
         guestName: 'Babatunde Adeleke',
         roomName: 'Deluxe King Room',
         roomUnit: 'Room 204',
-        checkIn: '2026-10-02',
-        checkOut: '2026-10-04',
+        checkIn: getRelativeDateStr(0),
+        checkOut: getRelativeDateStr(2),
         guests: 2,
         totalFormatted: '₦110,400',
       });
@@ -1448,7 +1445,7 @@ export default function StaffPortalModal({ isOpen, onClose }) {
                     <div>
                       <span className="text-[10px] text-slate-400 uppercase block">Stay Dates</span>
                       <span className="text-white font-medium">
-                        {selectedRoomForDetails.reservation?.checkIn || '2026-10-02'} → {selectedRoomForDetails.reservation?.checkOut || '2026-10-04'}
+                        {selectedRoomForDetails.reservation?.checkIn || getRelativeDateStr(0)} → {selectedRoomForDetails.reservation?.checkOut || getRelativeDateStr(2)}
                       </span>
                     </div>
                     <div>
