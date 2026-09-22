@@ -15,16 +15,24 @@ import {
 } from 'lucide-react';
 import { ROOMS_DATA } from '../data/resortData';
 
+// Default initial rotation (45°) centers Executive Suite and Senior Cabin side-by-side
+// flanked by Junior Cabin on the left and Standard Room on the right, matching the reference image exactly
+const DEFAULT_ROTATION = 45;
+
 export default function RoomsSection({ currency, onBookRoom }) {
   const [filter, setFilter] = useState('all');
   const [selectedRoomModal, setSelectedRoomModal] = useState(null);
   const [activePhotoIdx, setActivePhotoIdx] = useState(0);
-  const [cardDimensions, setCardDimensions] = useState({ width: 245, radius: 560 });
+  const [cardDimensions, setCardDimensions] = useState({
+    width: 290,
+    height: 300,
+    radius: 560,
+    offsetZ: -160,
+  });
 
-  // References for 3D cylinder manipulation without re-rendering every pointer frame
-  const containerRef = useRef(null);
+  // References for high-performance 3D cylinder manipulation
   const cylinderRef = useRef(null);
-  const rotationRef = useRef(0);
+  const rotationRef = useRef(DEFAULT_ROTATION);
   const isDraggingRef = useRef(false);
   const startXRef = useRef(0);
   const lastXRef = useRef(0);
@@ -48,7 +56,7 @@ export default function RoomsSection({ currency, onBookRoom }) {
   const displayItems = useMemo(() => {
     if (filteredRooms.length === 0) return [];
     if (filteredRooms.length >= 8) {
-      return filteredRooms.map((room, idx) => ({ ...room, _uniqueKey: `${room.id}-${idx}` }));
+      return filteredRooms.map((room, idx) => ({ ...room, _uniqueKey: `${room.id}-${idx}`, _origIdx: idx }));
     }
     const repeatCount = Math.ceil(8 / filteredRooms.length);
     const repeated = [];
@@ -58,6 +66,7 @@ export default function RoomsSection({ currency, onBookRoom }) {
         repeated.push({
           ...item,
           _uniqueKey: `${item.id}-rep${r}-${i}`,
+          _origIdx: i,
         });
       }
     }
@@ -67,25 +76,34 @@ export default function RoomsSection({ currency, onBookRoom }) {
   const numCards = displayItems.length;
   const angleStep = numCards > 0 ? 360 / numCards : 30;
 
-  // Responsive card size and cylinder radius calculation
+  // Responsive card size and cylinder radius calculation with clean perspective depth
   useEffect(() => {
     const updateDimensions = () => {
       const vw = window.innerWidth;
       if (vw < 640) {
-        // Mobile
-        const width = 160;
-        const radius = Math.max(280, Math.round((width / 2) / Math.sin(Math.PI / Math.max(numCards, 8)) * 0.95));
-        setCardDimensions({ width, radius: Math.min(radius, 360) });
+        // Mobile (compact, 2 center cards visible)
+        setCardDimensions({
+          width: 200,
+          height: 220,
+          radius: 380,
+          offsetZ: -120,
+        });
       } else if (vw < 1024) {
         // Tablet
-        const width = 210;
-        const radius = Math.max(380, Math.round((width / 2) / Math.sin(Math.PI / Math.max(numCards, 8))));
-        setCardDimensions({ width, radius: Math.min(radius, 500) });
+        setCardDimensions({
+          width: 250,
+          height: 265,
+          radius: 480,
+          offsetZ: -140,
+        });
       } else {
-        // Desktop
-        const width = 245;
-        const radius = Math.max(480, Math.round((width / 2) / Math.sin(Math.PI / Math.max(numCards, 8)) * 1.05));
-        setCardDimensions({ width, radius: Math.min(radius, 660) });
+        // Desktop: Large, bold cards matching reference image
+        setCardDimensions({
+          width: 290,
+          height: 300,
+          radius: 560,
+          offsetZ: -160,
+        });
       }
     };
 
@@ -94,13 +112,13 @@ export default function RoomsSection({ currency, onBookRoom }) {
     return () => window.removeEventListener('resize', updateDimensions);
   }, [numCards]);
 
-  // Apply rotation directly to DOM element for 60fps performance
+  // Direct GPU rotation update for 60-120fps smoothness
   const applyRotation = useCallback((angle) => {
     rotationRef.current = angle;
     if (cylinderRef.current) {
-      cylinderRef.current.style.transform = `rotateY(${angle}deg)`;
+      cylinderRef.current.style.transform = `translateZ(${cardDimensions.offsetZ}px) rotateY(${angle}deg)`;
     }
-  }, []);
+  }, [cardDimensions.offsetZ]);
 
   // Smooth rotation animation step
   const rotateTo = useCallback((targetAngle) => {
@@ -108,7 +126,7 @@ export default function RoomsSection({ currency, onBookRoom }) {
     const startAngle = rotationRef.current;
     const diff = targetAngle - startAngle;
     const startTime = performance.now();
-    const duration = 450;
+    const duration = 400;
 
     const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
 
@@ -163,14 +181,21 @@ export default function RoomsSection({ currency, onBookRoom }) {
     };
   }, [selectedRoomModal]);
 
-  // Reset rotation when filter changes
+  // Reset or set default rotation on filter change or initial mount
   useEffect(() => {
-    applyRotation(0);
-  }, [filter, applyRotation]);
+    if (filter === 'all') {
+      applyRotation(DEFAULT_ROTATION);
+    } else {
+      applyRotation(angleStep / 2);
+    }
+  }, [filter, angleStep, applyRotation]);
 
-  // Drag Interaction (Pointer Events with Velocity Momentum)
+  // BULLETPROOF MOUSE & TOUCH SLIDING / DRAGGING INTERACTION
   const handlePointerDown = (e) => {
+    // Only respond to main mouse button (left-click) or touch
+    if (e.button !== undefined && e.button !== 0) return;
     if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+
     isDraggingRef.current = true;
     startXRef.current = e.clientX;
     lastXRef.current = e.clientX;
@@ -178,57 +203,70 @@ export default function RoomsSection({ currency, onBookRoom }) {
     velocityRef.current = 0;
     hasMovedRef.current = false;
 
-    try {
-      e.currentTarget.setPointerCapture(e.pointerId);
-    } catch (_) {}
+    // Attach listeners directly to window to track drag even if cursor leaves bounds
+    const handleGlobalPointerMove = (moveEvt) => {
+      if (!isDraggingRef.current) return;
+      const currentX = moveEvt.clientX;
+      const deltaX = currentX - lastXRef.current;
+      const dt = Math.max(1, performance.now() - lastTimeRef.current);
+
+      if (Math.abs(currentX - startXRef.current) > 4) {
+        hasMovedRef.current = true;
+      }
+
+      // Smooth drag sensitivity: 0.20 deg per pixel
+      const newAngle = rotationRef.current + deltaX * 0.20;
+      applyRotation(newAngle);
+
+      velocityRef.current = (deltaX / dt) * 16.6;
+      lastXRef.current = currentX;
+      lastTimeRef.current = performance.now();
+    };
+
+    const handleGlobalPointerUp = () => {
+      isDraggingRef.current = false;
+      window.removeEventListener('pointermove', handleGlobalPointerMove);
+      window.removeEventListener('pointerup', handleGlobalPointerUp);
+      window.removeEventListener('pointercancel', handleGlobalPointerUp);
+
+      if (hasMovedRef.current) {
+        // Natural momentum release with smooth friction decay
+        let v = velocityRef.current * 0.5;
+        const friction = 0.94;
+
+        const momentumStep = () => {
+          if (Math.abs(v) > 0.04) {
+            applyRotation(rotationRef.current + v);
+            v *= friction;
+            animFrameRef.current = requestAnimationFrame(momentumStep);
+          }
+        };
+        animFrameRef.current = requestAnimationFrame(momentumStep);
+      }
+    };
+
+    window.addEventListener('pointermove', handleGlobalPointerMove, { passive: true });
+    window.addEventListener('pointerup', handleGlobalPointerUp);
+    window.addEventListener('pointercancel', handleGlobalPointerUp);
   };
 
-  const handlePointerMove = (e) => {
-    if (!isDraggingRef.current) return;
-    const now = performance.now();
-    const currentX = e.clientX;
-    const deltaX = currentX - lastXRef.current;
-    const dt = Math.max(1, now - lastTimeRef.current);
-
-    if (Math.abs(currentX - startXRef.current) > 6) {
-      hasMovedRef.current = true;
+  // Wheel horizontal sliding support (trackpad & mouse wheel)
+  const handleWheel = (e) => {
+    const isHorizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY);
+    if (isHorizontal) {
+      applyRotation(rotationRef.current - e.deltaX * 0.15);
+    } else if (e.shiftKey) {
+      e.preventDefault();
+      applyRotation(rotationRef.current - e.deltaY * 0.15);
     }
-
-    // Drag multiplier (0.16 deg/px)
-    const newAngle = rotationRef.current + deltaX * 0.16;
-    applyRotation(newAngle);
-
-    velocityRef.current = (deltaX / dt) * 16.6; // normalized velocity
-    lastXRef.current = currentX;
-    lastTimeRef.current = now;
   };
 
-  const handlePointerUp = (e) => {
-    if (!isDraggingRef.current) return;
-    isDraggingRef.current = false;
-    try {
-      e.currentTarget.releasePointerCapture(e.pointerId);
-    } catch (_) {}
-
+  const handleCardClick = (room, e) => {
+    // Suppress card opening if the user dragged or slid
     if (hasMovedRef.current) {
-      // Momentum decay physics
-      let currentVelocity = velocityRef.current * 0.45;
-      const friction = 0.93;
-
-      const momentumStep = () => {
-        if (Math.abs(currentVelocity) > 0.05) {
-          applyRotation(rotationRef.current + currentVelocity);
-          currentVelocity *= friction;
-          animFrameRef.current = requestAnimationFrame(momentumStep);
-        }
-      };
-      animFrameRef.current = requestAnimationFrame(momentumStep);
+      e?.preventDefault?.();
+      return;
     }
-  };
-
-  const handleCardClick = (room) => {
-    // If the pointer dragged, suppress click
-    if (hasMovedRef.current) return;
     setSelectedRoomModal(room);
     setActivePhotoIdx(0);
   };
@@ -250,7 +288,8 @@ export default function RoomsSection({ currency, onBookRoom }) {
   return (
     <section
       id="rooms"
-      className="relative min-h-[95vh] lg:min-h-screen w-full flex flex-col justify-between overflow-hidden select-none py-12 lg:py-16"
+      onWheel={handleWheel}
+      className="relative min-h-[95vh] lg:min-h-screen w-full flex flex-col justify-between overflow-hidden select-none py-8 lg:py-12"
       style={{
         background: `
           radial-gradient(circle at 50% 18%, rgba(201, 133, 74, 0.18), transparent 48%),
@@ -260,29 +299,29 @@ export default function RoomsSection({ currency, onBookRoom }) {
       }}
     >
       {/* Subtle edge fade curtains for seamless 3D horizon fade */}
-      <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-36 lg:w-48 bg-gradient-to-r from-[#120601] via-[#120601]/80 to-transparent z-20 pointer-events-none" />
-      <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-36 lg:w-48 bg-gradient-to-l from-[#120601] via-[#120601]/80 to-transparent z-20 pointer-events-none" />
+      <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-28 lg:w-44 bg-gradient-to-r from-[#120601] via-[#120601]/80 to-transparent z-20 pointer-events-none" />
+      <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-28 lg:w-44 bg-gradient-to-l from-[#120601] via-[#120601]/80 to-transparent z-20 pointer-events-none" />
 
       {/* Header Content */}
-      <div className="relative z-30 max-w-5xl mx-auto px-4 sm:px-6 text-center">
+      <div className="relative z-30 max-w-5xl mx-auto px-4 sm:px-6 text-center shrink-0">
         <div className="pointer-events-none">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#2A1208]/90 border border-[#C9854A]/30 text-xs text-[#C9854A] mb-3 backdrop-blur-md">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#2A1208]/90 border border-[#C9854A]/30 text-xs text-[#C9854A] mb-2.5 backdrop-blur-md">
             <Sparkles className="w-3.5 h-3.5" />
             <span className="font-semibold uppercase tracking-wider">Stay In Pure Comfort</span>
           </div>
-          <h2 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold text-white mb-3 tracking-tight">
+          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-2.5 tracking-tight">
             Bespoke Rooms & Luxury Suites
           </h2>
-          <p className="text-[#C9A070] text-xs sm:text-sm md:text-base font-light max-w-2xl mx-auto leading-relaxed">
+          <p className="text-[#C9A070] text-xs sm:text-sm font-light max-w-2xl mx-auto leading-relaxed">
             Every room at Oxygen Orbis is thoughtfully crafted with plush bedding, uninterrupted 24/7 power, high-speed fiber Wi-Fi, and personalized hospitality.
           </p>
         </div>
 
         {/* Filter Pills (Interactive) */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mt-6 pointer-events-auto">
+        <div className="flex flex-wrap items-center justify-center gap-2 mt-4 pointer-events-auto">
           <button
             onClick={() => setFilter('all')}
-            className={`px-4 py-1.5 sm:py-2 rounded-full text-xs font-semibold transition-all duration-200 ${
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${
               filter === 'all'
                 ? 'bg-[#C9854A] text-black shadow-lg shadow-[#C9854A]/30 scale-105'
                 : 'bg-[#2A1208]/80 text-[#E0C8A8] border border-[#4A2010] hover:border-[#C9854A]/40'
@@ -292,7 +331,7 @@ export default function RoomsSection({ currency, onBookRoom }) {
           </button>
           <button
             onClick={() => setFilter('rooms')}
-            className={`px-4 py-1.5 sm:py-2 rounded-full text-xs font-semibold transition-all duration-200 ${
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${
               filter === 'rooms'
                 ? 'bg-[#C9854A] text-black shadow-lg shadow-[#C9854A]/30 scale-105'
                 : 'bg-[#2A1208]/80 text-[#E0C8A8] border border-[#4A2010] hover:border-[#C9854A]/40'
@@ -302,7 +341,7 @@ export default function RoomsSection({ currency, onBookRoom }) {
           </button>
           <button
             onClick={() => setFilter('cabins')}
-            className={`px-4 py-1.5 sm:py-2 rounded-full text-xs font-semibold transition-all duration-200 ${
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${
               filter === 'cabins'
                 ? 'bg-[#C9854A] text-black shadow-lg shadow-[#C9854A]/30 scale-105'
                 : 'bg-[#2A1208]/80 text-[#E0C8A8] border border-[#4A2010] hover:border-[#C9854A]/40'
@@ -312,7 +351,7 @@ export default function RoomsSection({ currency, onBookRoom }) {
           </button>
           <button
             onClick={() => setFilter('diplomatic')}
-            className={`px-4 py-1.5 sm:py-2 rounded-full text-xs font-semibold transition-all duration-200 ${
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${
               filter === 'diplomatic'
                 ? 'bg-[#C9854A] text-black shadow-lg shadow-[#C9854A]/30 scale-105'
                 : 'bg-[#2A1208]/80 text-[#E0C8A8] border border-[#4A2010] hover:border-[#C9854A]/40'
@@ -323,27 +362,26 @@ export default function RoomsSection({ currency, onBookRoom }) {
         </div>
       </div>
 
-      {/* 3D Cylinder Orbit Stage */}
+      {/* 3D Cylinder Orbit Stage (Slideable via Mouse / Touch Drag) */}
       <div
-        ref={containerRef}
         onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
-        className="relative w-full h-[360px] sm:h-[420px] lg:h-[480px] my-auto cursor-grab active:cursor-grabbing flex items-center justify-center overflow-visible"
+        onDragStart={(e) => e.preventDefault()}
+        className="relative w-full h-[380px] sm:h-[430px] lg:h-[470px] my-2 sm:my-4 cursor-grab active:cursor-grabbing flex items-center justify-center overflow-visible"
         style={{
-          perspective: '950px',
+          perspective: '1200px',
           perspectiveOrigin: '50% 50%',
           touchAction: 'pan-y',
+          userSelect: 'none',
+          WebkitUserSelect: 'none',
         }}
       >
         {/* Revolving Cylinder */}
         <div
           ref={cylinderRef}
-          className="relative w-full h-full flex items-center justify-center will-change-transform"
+          className="relative w-full h-full flex items-center justify-center will-change-transform pointer-events-none"
           style={{
             transformStyle: 'preserve-3d',
-            transform: 'rotateY(0deg)',
+            transform: `translateZ(${cardDimensions.offsetZ}px) rotateY(${DEFAULT_ROTATION}deg)`,
           }}
         >
           {displayItems.map((room, idx) => {
@@ -351,11 +389,12 @@ export default function RoomsSection({ currency, onBookRoom }) {
             return (
               <div
                 key={room._uniqueKey}
-                onClick={() => handleCardClick(room)}
-                className="group absolute rounded-2xl overflow-hidden shadow-2xl cursor-pointer border border-[#C9854A]/25 hover:border-[#C9854A] bg-[#2A1208] transition-all duration-300"
+                onClick={(e) => handleCardClick(room, e)}
+                onDragStart={(e) => e.preventDefault()}
+                className="group absolute rounded-3xl overflow-hidden shadow-2xl cursor-pointer border border-[#C9854A]/40 hover:border-[#C9854A] bg-[#2A1208] pointer-events-auto transition-transform duration-300"
                 style={{
                   width: `${cardDimensions.width}px`,
-                  height: `${cardDimensions.width}px`,
+                  height: `${cardDimensions.height}px`,
                   left: '50%',
                   top: '50%',
                   transform: `translate(-50%, -50%) rotateY(${cardAngle}deg) translateZ(${cardDimensions.radius}px)`,
@@ -364,59 +403,61 @@ export default function RoomsSection({ currency, onBookRoom }) {
                   WebkitBackfaceVisibility: 'hidden',
                 }}
               >
-                {/* 1:1 Aspect Ratio Room Image */}
+                {/* Room Image */}
                 <img
                   src={room.image}
                   alt={room.name}
                   loading={idx < 4 ? 'eager' : 'lazy'}
                   draggable={false}
+                  onDragStart={(e) => e.preventDefault()}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none select-none"
                 />
 
-                {/* Ambient vignette gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/45 to-transparent pointer-events-none" />
+                {/* Dark Vignette Gradient */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-transparent pointer-events-none" />
 
                 {/* Top Badge: Promo / Value */}
                 {room.badge && (
-                  <span className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full text-[9.5px] sm:text-[10px] font-bold bg-[#1A0C06]/90 text-[#C9854A] border border-[#C9854A]/40 backdrop-blur-md pointer-events-none">
+                  <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-black/65 text-white border border-white/10 backdrop-blur-md pointer-events-none shadow-sm">
                     {room.badge.split('•')[0].trim()}
                   </span>
                 )}
 
                 {/* Top Rating */}
-                <div className="absolute top-2.5 right-2.5 flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/70 backdrop-blur-md text-[10px] font-bold text-amber-300 border border-white/10 pointer-events-none">
-                  <Star className="w-3 h-3 fill-amber-300 text-amber-300" />
+                <div className="absolute top-3 right-3 flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/65 backdrop-blur-md text-xs font-bold text-amber-300 border border-white/10 pointer-events-none shadow-sm">
+                  <Star className="w-3.5 h-3.5 fill-amber-300 text-amber-300" />
                   <span>{room.rating}</span>
                 </div>
 
-                {/* Bottom Room Meta */}
-                <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-3.5 text-left pointer-events-none">
-                  <h3 className="font-serif text-sm sm:text-base font-bold text-white group-hover:text-[#C9854A] transition-colors truncate">
+                {/* Bottom Room Meta Matching Reference Image Exactly */}
+                <div className="absolute bottom-0 left-0 right-0 p-3.5 sm:p-4 text-left pointer-events-none">
+                  <h3 className="font-serif text-lg sm:text-xl font-bold text-[#E0A86A] group-hover:text-white transition-colors truncate">
                     {room.name}
                   </h3>
 
-                  <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-[#E0C8A8] mt-0.5 truncate">
+                  <div className="flex items-center gap-1.5 text-xs text-[#E0C8A8] mt-0.5 truncate">
                     <span>{room.bed.split('(')[0].trim()}</span>
                     <span>•</span>
                     <span>Max {room.maxGuests} Guests</span>
                   </div>
 
-                  <div className="flex items-baseline justify-between mt-2 pt-1.5 border-t border-white/10">
+                  <div className="flex items-center justify-between mt-3 pt-2 border-t border-white/10">
                     <div>
                       <div className="flex items-baseline gap-1">
-                        <span className="font-serif text-sm sm:text-lg font-bold text-white">
+                        <span className="font-serif text-base sm:text-xl font-bold text-white">
                           {formatPrice(room)}
                         </span>
-                        <span className="text-[10px] text-[#C9A070]">/night</span>
+                        <span className="text-xs text-[#C9A070]">/night</span>
                       </div>
-                      <div className="text-[9px] text-emerald-400 font-medium">
+                      <div className="text-[10px] sm:text-xs text-emerald-400 font-medium">
                         ✓ Breakfast &amp; VAT
                       </div>
                     </div>
 
-                    <div className="px-2 py-1 rounded-lg bg-[#C9854A]/20 group-hover:bg-[#C9854A] text-[#C9854A] group-hover:text-black transition-colors text-[10px] font-bold flex items-center gap-0.5">
+                    {/* Warm Caramel View Button */}
+                    <div className="px-3.5 py-1 rounded-full bg-[#C9854A] group-hover:bg-[#E0A86A] text-black transition-all duration-200 text-xs font-bold flex items-center gap-1 shadow-md shadow-black/40">
                       <span>View</span>
-                      <ArrowRight className="w-2.5 h-2.5" />
+                      <ArrowRight className="w-3 h-3" />
                     </div>
                   </div>
                 </div>
@@ -427,11 +468,11 @@ export default function RoomsSection({ currency, onBookRoom }) {
       </div>
 
       {/* Bottom Controls & Interaction Guidance */}
-      <div className="relative z-30 max-w-4xl mx-auto px-4 w-full flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="relative z-30 max-w-4xl mx-auto px-4 w-full flex flex-col sm:flex-row items-center justify-between gap-4 pb-2 shrink-0">
         {/* Interaction Hint */}
         <div className="flex items-center gap-2 text-xs text-[#C9A070]/80">
           <MoveHorizontal className="w-4 h-4 text-[#C9854A] animate-pulse" />
-          <span>Drag horizontally to rotate • Click card to view details</span>
+          <span>Slide with mouse / swipe horizontally • Click card to expand</span>
         </div>
 
         {/* Carousel Navigation Chevrons */}
@@ -443,7 +484,7 @@ export default function RoomsSection({ currency, onBookRoom }) {
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
-          <div className="text-[11px] font-semibold text-[#E0C8A8] px-3 py-1 rounded-full bg-[#2A1208]/60 border border-[#4A2010]/80">
+          <div className="text-[11px] font-semibold text-[#E0C8A8] px-3.5 py-1 rounded-full bg-[#2A1208]/60 border border-[#4A2010]/80">
             {filteredRooms.length} Accommodations
           </div>
           <button
