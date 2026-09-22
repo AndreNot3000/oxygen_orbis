@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, Phone, Menu, X, ShieldCheck, TrendingUp, Sparkles } from 'lucide-react';
 import { RESORT_INFO } from '../data/resortData';
 
@@ -22,6 +22,18 @@ export default function Navbar({
   onMouseLeave
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Reception desk keyboard shortcut: Ctrl+Shift+P (or Cmd+Shift+P) for authorized staff terminal access
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'P' || e.key === 'p')) {
+        e.preventDefault();
+        if (onOpenPms) onOpenPms();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onOpenPms]);
 
   return (
     <header 
@@ -162,16 +174,6 @@ export default function Navbar({
               </button>
             </div>
 
-            {/* Staff PMS Button - Sleek Dark Glass */}
-            <button
-              onClick={onOpenPms}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[11px] font-medium tracking-wider text-[#E0C8A8] bg-white/[0.03] border border-white/[0.1] hover:border-[#C9854A]/50 hover:text-[#E0A86A] transition-all hover:scale-[1.02] cursor-pointer shadow-sm"
-              title="Open Front Desk Property Management System (PMS)"
-            >
-              <ShieldCheck className="w-3.5 h-3.5 text-[#C9854A]" />
-              <span>Staff PMS</span>
-            </button>
-
             {/* Pitch Deck Button - Refined Emerald Glass */}
             <button
               onClick={onOpenPitch}
@@ -194,12 +196,6 @@ export default function Navbar({
 
           {/* Mobile Menu Trigger & Quick Actions */}
           <div className="flex md:hidden items-center gap-2">
-            <button
-              onClick={onOpenPms}
-              className="px-2.5 py-1 text-[10px] uppercase tracking-wider rounded-full bg-white/[0.04] text-[#C9854A] border border-[#C9854A]/30 font-medium"
-            >
-              PMS
-            </button>
             <button
               onClick={onOpenPitch}
               className="px-2.5 py-1 text-[10px] uppercase tracking-wider rounded-full bg-emerald-500/[0.08] text-emerald-300 border border-emerald-500/30 font-medium"
@@ -314,24 +310,15 @@ export default function Navbar({
             >
               <Calendar className="w-4 h-4" /> Book A Stay
             </button>
-            <div className="grid grid-cols-2 gap-2 pt-1">
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  onOpenPms();
-                }}
-                className="py-2.5 rounded-full text-[10.5px] uppercase tracking-wider font-semibold bg-white/[0.03] text-[#C9854A] border border-white/[0.08] flex items-center justify-center gap-1.5"
-              >
-                <ShieldCheck className="w-3.5 h-3.5" /> Staff PMS
-              </button>
+            <div className="pt-1">
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
                   onOpenPitch();
                 }}
-                className="py-2.5 rounded-full text-[10.5px] uppercase tracking-wider font-semibold bg-emerald-500/[0.07] text-emerald-300 border border-emerald-500/20 flex items-center justify-center gap-1.5"
+                className="w-full py-2.5 rounded-full text-[10.5px] uppercase tracking-wider font-semibold bg-emerald-500/[0.07] text-emerald-300 border border-emerald-500/20 flex items-center justify-center gap-1.5 hover:bg-emerald-500/[0.14] transition-all cursor-pointer"
               >
-                <TrendingUp className="w-3.5 h-3.5" /> Pitch Deck
+                <TrendingUp className="w-3.5 h-3.5" /> Management Pitch Deck
               </button>
             </div>
           </div>

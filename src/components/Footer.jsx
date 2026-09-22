@@ -44,9 +44,9 @@ const FOOTER_GROUPS = [
     ],
   },
   {
-    title: "MANAGEMENT & PMS",
+    title: "OPERATIONS & MANAGEMENT",
     links: [
-      { label: "Front Desk Staff PMS", action: "pms" },
+      { label: "Staff Operational Terminal (Authorized Only)", action: "pms" },
       { label: "Owner's Pitch View", action: "pitch" },
       { label: "Digital Stay Pass & QR", action: "booking" },
       { label: "Direct Privilege Guarantee", href: "#faqs" },

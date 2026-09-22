@@ -46,13 +46,19 @@ async function executeTestSuite() {
   });
 
   runTest('Categorizes room units correctly into distinct tiers', () => {
+    const standardCount = INITIAL_ROOM_UNITS.filter((r) => r.typeId === 'standard-room').length;
     const deluxeKingCount = INITIAL_ROOM_UNITS.filter((r) => r.typeId === 'deluxe-king').length;
-    const executiveCount = INITIAL_ROOM_UNITS.filter((r) => r.typeId === 'executive-room').length;
-    const penthouseCount = INITIAL_ROOM_UNITS.filter((r) => r.typeId === 'presidential-suite').length;
+    const executiveCount = INITIAL_ROOM_UNITS.filter((r) => r.typeId === 'executive-suite').length;
+    const seniorCabinCount = INITIAL_ROOM_UNITS.filter((r) => r.typeId === 'senior-cabin').length;
 
-    assert.strictEqual(deluxeKingCount, 20); // Floors 1 & 2
-    assert.strictEqual(executiveCount, 10);  // Floor 3
-    assert.strictEqual(penthouseCount, 10);  // Floor 4
+    assert.strictEqual(standardCount, 3);
+    assert.strictEqual(deluxeKingCount, 4);
+    assert.strictEqual(executiveCount, 7);
+    assert.strictEqual(seniorCabinCount, 5);
+
+    // Verify all 12 authentic room categories exist across the 40 units
+    const distinctTypes = new Set(INITIAL_ROOM_UNITS.map((r) => r.typeId));
+    assert.strictEqual(distinctTypes.size, 12);
   });
 
   // -------------------------------------------------------------

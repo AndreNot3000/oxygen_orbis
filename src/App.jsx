@@ -33,6 +33,30 @@ export default function App() {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isPmsOpen, setIsPmsOpen] = useState(false);
 
+  // URL Hash (#staff, #pms) and global keyboard shortcut (Ctrl+Shift+P) for staff terminal
+  useEffect(() => {
+    const checkHash = () => {
+      if (window.location.hash === '#staff' || window.location.hash === '#pms') {
+        setIsPmsOpen(true);
+      }
+    };
+    checkHash();
+    window.addEventListener('hashchange', checkHash);
+
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'P' || e.key === 'p')) {
+        e.preventDefault();
+        setIsPmsOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('hashchange', checkHash);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
   // Hero progress & navbar visibility
   const [heroProgress, setHeroProgress] = useState(0);
   const [isScrolled, setIsScrolled] = useState(false);
