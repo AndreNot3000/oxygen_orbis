@@ -14,6 +14,7 @@ import AvailabilityCalendarModal from './components/AvailabilityCalendarModal';
 import StaffPortalModal from './components/StaffPortalModal';
 import AddonsSection from './components/AddonsSection';
 import WhatsAppButton from './components/WhatsAppButton';
+import AmbientSoundPlayer from './components/AmbientSoundPlayer';
 import { ROOMS_DATA } from './data/resortData';
 
 export default function App() {
@@ -223,6 +224,9 @@ export default function App() {
         isOpen={isPmsOpen}
         onClose={() => setIsPmsOpen(false)}
       />
+
+      {/* Floating Ambient Afro-Lounge Soundscape Controller */}
+      <AmbientSoundPlayer />
 
       {/* Floating WhatsApp Reservations Button */}
       <WhatsAppButton />

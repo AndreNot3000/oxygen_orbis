@@ -16,6 +16,9 @@ import {
   sendEmailInvoice, 
   NIGERIAN_VAT_RATE 
 } from '../src/services/invoiceService.js';
+import fs from 'fs';
+import path from 'path';
+import { TRACK_INFO } from '../src/services/audioService.js';
 
 console.log('================================================================');
 console.log('🏨 RUNNING TEST SUITE: MODULE 4 (Automated Dispatch & Comms)');
@@ -199,6 +202,25 @@ async function executeTestSuite() {
     assert.ok(res.messageId.startsWith('msg_'));
     assert.ok(res.deliveredAt);
     assert.ok(res.htmlLength > 500);
+  });
+
+  // -------------------------------------------------------------
+  // TEST GROUP 4: CARD 4.4 - Ambient Afro-Lounge Sound System
+  // -------------------------------------------------------------
+  console.log('\n📦 TEST GROUP 4: Ambient Afro-Lounge Sound System (Card 4.4)');
+
+  runTest('Validates TRACK_INFO metadata (title, subtitle, audio file paths)', () => {
+    assert.strictEqual(TRACK_INFO.title, 'Oxygen Orbis Lounge');
+    assert.strictEqual(TRACK_INFO.subtitle, 'Sunset Afro-Chill Instrumental');
+    assert.strictEqual(TRACK_INFO.src, '/audio/oxygen-afro-lounge.mp3');
+    assert.ok(TRACK_INFO.fallbackSrc.startsWith('https://'));
+  });
+
+  runTest('Verifies authentic MP3 audio file exists in public/audio with valid file size (>1MB)', () => {
+    const audioFilePath = path.resolve('public', 'audio', 'oxygen-afro-lounge.mp3');
+    assert.ok(fs.existsSync(audioFilePath), 'Audio file must exist in public/audio');
+    const stats = fs.statSync(audioFilePath);
+    assert.ok(stats.size > 1000000, `Audio file size (${stats.size} bytes) must exceed 1MB`);
   });
 
   console.log('\n================================================================');

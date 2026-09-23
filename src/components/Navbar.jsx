@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Phone, Menu, X, ShieldCheck, TrendingUp, Sparkles } from 'lucide-react';
+import { Calendar, Phone, Menu, X, ShieldCheck, TrendingUp, Sparkles, Volume2, VolumeX } from 'lucide-react';
 import { RESORT_INFO } from '../data/resortData';
+import { useAudio } from '../context/AudioContext';
 
 const InstagramIcon = ({ className = "w-3.5 h-3.5" }) => (
   <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -21,6 +22,7 @@ export default function Navbar({
   onMouseLeave
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { isPlaying, togglePlay } = useAudio();
 
   // Reception desk keyboard shortcut: Ctrl+Shift+P (or Cmd+Shift+P) for authorized staff terminal access
   useEffect(() => {
@@ -150,6 +152,33 @@ export default function Navbar({
           {/* Actions & CTA Cluster */}
           <div className="hidden md:flex items-center space-x-3.5">
 
+            {/* Ambient Sound Toggle Button */}
+            <button
+              onClick={togglePlay}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium tracking-wider transition-all duration-300 hover:scale-[1.02] cursor-pointer shadow-sm ${
+                isPlaying
+                  ? 'bg-[#C9854A]/20 border border-[#C9854A]/70 text-[#E0A86A]'
+                  : 'bg-white/[0.04] border border-white/[0.1] text-zinc-400 hover:text-white hover:border-[#C9854A]/40'
+              }`}
+              title={isPlaying ? 'Pause Ambient Afro-Lounge' : 'Play Ambient Afro-Lounge'}
+            >
+              {isPlaying ? (
+                <>
+                  <span className="flex items-end gap-[2px] h-3 w-3">
+                    <span className="w-[1.5px] rounded-full bg-[#E0A86A] animate-soundwave-1" />
+                    <span className="w-[1.5px] rounded-full bg-[#C9854A] animate-soundwave-2" />
+                    <span className="w-[1.5px] rounded-full bg-[#E0A86A] animate-soundwave-3" />
+                  </span>
+                  <span>Ambience</span>
+                </>
+              ) : (
+                <>
+                  <VolumeX className="w-3.5 h-3.5 text-zinc-400" />
+                  <span>Ambience</span>
+                </>
+              )}
+            </button>
+
             {/* Pitch Deck Button - Refined Emerald Glass */}
             <button
               onClick={onOpenPitch}
@@ -251,6 +280,21 @@ export default function Navbar({
             >
               <Calendar className="w-4 h-4 text-[#C9854A]" />
               <span>Rate Calendar</span>
+            </button>
+
+            <button 
+              onClick={togglePlay}
+              className="text-left hover:text-[#C9854A] py-1 flex items-center justify-between cursor-pointer transition-colors w-full"
+            >
+              <div className="flex items-center gap-2">
+                {isPlaying ? <Volume2 className="w-4 h-4 text-[#C9854A]" /> : <VolumeX className="w-4 h-4 text-zinc-400" />}
+                <span>Resort Soundscape</span>
+              </div>
+              <span className={`text-[9px] px-2 py-0.5 rounded border tracking-widest uppercase ${
+                isPlaying ? 'bg-[#C9854A]/20 text-[#E0A86A] border-[#C9854A]/40' : 'bg-white/[0.04] text-zinc-400 border-white/[0.1]'
+              }`}>
+                {isPlaying ? 'Playing' : 'Muted'}
+              </span>
             </button>
           </div>
 
