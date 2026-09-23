@@ -54,7 +54,14 @@ export default function AvailabilityCalendarModal({
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const isPastMonth = 
+    currentYear < startOfToday.getFullYear() || 
+    (currentYear === startOfToday.getFullYear() && currentMonth <= startOfToday.getMonth());
+
   const handlePrevMonth = () => {
+    if (isPastMonth) return;
     if (currentMonth === 0) {
       setCurrentMonth(11);
       setCurrentYear(currentYear - 1);
@@ -73,7 +80,8 @@ export default function AvailabilityCalendarModal({
   };
 
   const handleDateClick = (dateStr, isAvailable) => {
-    if (!isAvailable) return;
+    const todayStr = formatDateISO(new Date());
+    if (!isAvailable || dateStr < todayStr) return;
 
     if (selectingStep === 'checkIn') {
       setCheckIn(dateStr);
@@ -212,13 +220,18 @@ export default function AvailabilityCalendarModal({
               <div className="flex items-center gap-2">
                 <button
                   onClick={handlePrevMonth}
-                  className="p-2 rounded-xl bg-[#111B24] border border-[#243546] hover:text-white transition"
+                  disabled={isPastMonth}
+                  className={`p-2 rounded-xl bg-[#111B24] border border-[#243546] transition ${
+                    isPastMonth ? 'opacity-25 cursor-not-allowed text-slate-600' : 'hover:text-white'
+                  }`}
+                  aria-label="Previous Month"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
                 <button
                   onClick={handleNextMonth}
                   className="p-2 rounded-xl bg-[#111B24] border border-[#243546] hover:text-white transition"
+                  aria-label="Next Month"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
@@ -319,6 +332,8 @@ export default function AvailabilityCalendarModal({
 
                 <button
                   onClick={() => {
+                    const todayStr = formatDateISO(new Date());
+                    if (checkIn < todayStr || checkOut <= checkIn) return;
                     onClose();
                     onSelectDatesAndBook({
                       checkIn,
@@ -326,7 +341,8 @@ export default function AvailabilityCalendarModal({
                       roomType: selectedRoomId,
                     });
                   }}
-                  className="gold-gradient-btn px-6 py-3 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 shadow-lg shadow-[#C5A880]/20"
+                  disabled={!quote.success || checkIn < formatDateISO(new Date())}
+                  className="gold-gradient-btn px-6 py-3 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 shadow-lg shadow-[#C5A880]/20 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <span>Book These Dates</span>
                   <ArrowRight className="w-4 h-4" />

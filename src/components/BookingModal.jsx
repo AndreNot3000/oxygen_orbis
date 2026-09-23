@@ -18,10 +18,28 @@ import { getRelativeDateStr } from '../services/pmsService';
 export default function BookingModal({ isOpen, onClose, initialData, currency }) {
   if (!isOpen) return null;
 
+  // Past Date Prevention: Dates before today can never be selected
+  const todayStr = getRelativeDateStr(0);
+  const tomorrowStr = getRelativeDateStr(1);
+
   // Form states
   const [step, setStep] = useState(1);
-  const [checkIn, setCheckIn] = useState(initialData?.checkIn || '');
-  const [checkOut, setCheckOut] = useState(initialData?.checkOut || '');
+  const [dateError, setDateError] = useState(null);
+  const [checkIn, setCheckIn] = useState(() => {
+    if (initialData?.checkIn && initialData.checkIn >= todayStr) {
+      return initialData.checkIn;
+    }
+    return todayStr;
+  });
+  const [checkOut, setCheckOut] = useState(() => {
+    const validIn = (initialData?.checkIn && initialData.checkIn >= todayStr)
+      ? initialData.checkIn
+      : todayStr;
+    if (initialData?.checkOut && initialData.checkOut > validIn) {
+      return initialData.checkOut;
+    }
+    return getRelativeDateStr(1, new Date(validIn));
+  });
   const [selectedRoomId, setSelectedRoomId] = useState(initialData?.roomType || ROOMS_DATA[0].id);
   const [guests, setGuests] = useState(initialData?.guests || 2);
   const [selectedAddons, setSelectedAddons] = useState(initialData?.addonId ? [initialData.addonId] : []);
@@ -103,7 +121,57 @@ export default function BookingModal({ isOpen, onClose, initialData, currency })
     }
   };
 
+  const handleCheckInChange = (newDate) => {
+    if (!newDate) {
+      setCheckIn(todayStr);
+      setDateError('Check-in date is required.');
+      return;
+    }
+    if (newDate < todayStr) {
+      setDateError('Check-in date cannot be in the past. Date reset to today.');
+      setCheckIn(todayStr);
+      if (checkOut <= todayStr) {
+        setCheckOut(tomorrowStr);
+      }
+      return;
+    }
+    setDateError(null);
+    setCheckIn(newDate);
+
+    // If checkOut is now on or before checkIn, auto-advance checkOut to checkIn + 1 day
+    if (!checkOut || checkOut <= newDate) {
+      setCheckOut(getRelativeDateStr(1, new Date(newDate)));
+    }
+  };
+
+  const handleCheckOutChange = (newDate) => {
+    const currentIn = checkIn || todayStr;
+    if (!newDate) {
+      setCheckOut(getRelativeDateStr(1, new Date(currentIn)));
+      setDateError('Check-out date is required.');
+      return;
+    }
+    if (newDate <= currentIn) {
+      setDateError('Check-out date must be at least one day after check-in.');
+      setCheckOut(getRelativeDateStr(1, new Date(currentIn)));
+      return;
+    }
+    setDateError(null);
+    setCheckOut(newDate);
+  };
+
   const handleNextToStep2 = () => {
+    if (!checkIn || checkIn < todayStr) {
+      setDateError('Check-in date cannot be in the past. Please select today or a future date.');
+      setCheckIn(todayStr);
+      return;
+    }
+    if (!checkOut || checkOut <= checkIn) {
+      setDateError('Check-out date must be at least one night after check-in.');
+      setCheckOut(getRelativeDateStr(1, new Date(checkIn)));
+      return;
+    }
+    setDateError(null);
     setStep(2);
   };
 
@@ -445,31 +513,41 @@ Please review our reservation and digital check-in pass!`;
             <div className="space-y-6">
               {/* Date Selection */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="bg-[#0A1118] border border-[#243546] rounded-xl p-3">
-                  <label className="text-[11px] font-semibold uppercase text-[#C5A880] block mb-1 flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5" /> Check-In Date
+                <div className="bg-[#1A0C06] border border-[#4A2010] rounded-xl p-3 focus-within:border-[#C9854A] transition-colors">
+                  <label className="text-[11px] font-semibold uppercase text-[#C9854A] block mb-1 flex items-center gap-1">
+                    <Calendar className="w-3.5 h-3.5 text-[#C9854A]" /> Check-In Date
                   </label>
                   <input
                     type="date"
                     value={checkIn}
-                    onChange={(e) => setCheckIn(e.target.value)}
-                    className="w-full bg-transparent text-sm text-white font-medium focus:outline-none"
+                    min={todayStr}
+                    onChange={(e) => handleCheckInChange(e.target.value)}
+                    className="w-full bg-transparent text-sm text-white font-medium focus:outline-none cursor-pointer [color-scheme:dark]"
                   />
+                  <span className="text-[10px] text-[#C9A070] block mt-1">Earliest: Today ({todayStr})</span>
                 </div>
 
-                <div className="bg-[#0A1118] border border-[#243546] rounded-xl p-3">
-                  <label className="text-[11px] font-semibold uppercase text-[#C5A880] block mb-1 flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5" /> Check-Out Date
+                <div className="bg-[#1A0C06] border border-[#4A2010] rounded-xl p-3 focus-within:border-[#C9854A] transition-colors">
+                  <label className="text-[11px] font-semibold uppercase text-[#C9854A] block mb-1 flex items-center gap-1">
+                    <Calendar className="w-3.5 h-3.5 text-[#C9854A]" /> Check-Out Date
                   </label>
                   <input
                     type="date"
                     value={checkOut}
-                    min={checkIn}
-                    onChange={(e) => setCheckOut(e.target.value)}
-                    className="w-full bg-transparent text-sm text-white font-medium focus:outline-none"
+                    min={getRelativeDateStr(1, new Date(checkIn || todayStr))}
+                    onChange={(e) => handleCheckOutChange(e.target.value)}
+                    className="w-full bg-transparent text-sm text-white font-medium focus:outline-none cursor-pointer [color-scheme:dark]"
                   />
+                  <span className="text-[10px] text-[#C9A070] block mt-1">Minimum 1 night stay</span>
                 </div>
               </div>
+
+              {dateError && (
+                <div className="p-3 rounded-xl bg-red-950/60 border border-red-500/40 text-red-200 text-xs flex items-center gap-2 animate-in fade-in">
+                  <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+                  <span>{dateError}</span>
+                </div>
+              )}
 
               {/* Guests Count */}
               <div className="bg-[#0A1118] border border-[#243546] rounded-xl p-3 flex items-center justify-between">

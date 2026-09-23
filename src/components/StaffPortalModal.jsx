@@ -340,6 +340,16 @@ export default function StaffPortalModal({ isOpen, onClose }) {
     e.preventDefault();
     if (!walkInName || !walkInPhone) return;
 
+    const todayStr = getRelativeDateStr(0);
+    if (walkInCheckIn < todayStr) {
+      alert('Check-in date cannot be in the past! Please select today or a future date.');
+      return;
+    }
+    if (walkInCheckOut <= walkInCheckIn) {
+      alert('Check-out date must be at least one day after check-in date!');
+      return;
+    }
+
     const unit = rooms.find((r) => r.unitNumber === walkInUnitNumber);
     if (unit && unit.status === 'OCCUPIED') {
       alert(`Room ${walkInUnitNumber} is currently occupied! Please pick an available room.`);
@@ -1284,9 +1294,19 @@ export default function StaffPortalModal({ isOpen, onClose }) {
                     <input
                       type="date"
                       value={walkInCheckIn}
-                      onChange={(e) => setWalkInCheckIn(e.target.value)}
-                      className="w-full bg-[#111B24] border border-[#243546] rounded-xl px-3 py-2 text-white"
+                      min={getRelativeDateStr(0)}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        const todayStr = getRelativeDateStr(0);
+                        const safeVal = val < todayStr ? todayStr : val;
+                        setWalkInCheckIn(safeVal);
+                        if (walkInCheckOut <= safeVal) {
+                          setWalkInCheckOut(getRelativeDateStr(1, new Date(safeVal)));
+                        }
+                      }}
+                      className="w-full bg-[#111B24] border border-[#243546] rounded-xl px-3 py-2 text-white [color-scheme:dark]"
                     />
+                    <span className="text-[10px] text-slate-400 block mt-1">Min: Today ({getRelativeDateStr(0)})</span>
                   </div>
 
                   <div>
@@ -1296,9 +1316,15 @@ export default function StaffPortalModal({ isOpen, onClose }) {
                     <input
                       type="date"
                       value={walkInCheckOut}
-                      onChange={(e) => setWalkInCheckOut(e.target.value)}
-                      className="w-full bg-[#111B24] border border-[#243546] rounded-xl px-3 py-2 text-white"
+                      min={getRelativeDateStr(1, new Date(walkInCheckIn || getRelativeDateStr(0)))}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        const minDate = getRelativeDateStr(1, new Date(walkInCheckIn || getRelativeDateStr(0)));
+                        setWalkInCheckOut(val < minDate ? minDate : val);
+                      }}
+                      className="w-full bg-[#111B24] border border-[#243546] rounded-xl px-3 py-2 text-white [color-scheme:dark]"
                     />
+                    <span className="text-[10px] text-slate-400 block mt-1">Min: 1 night after check-in</span>
                   </div>
                 </div>
 
