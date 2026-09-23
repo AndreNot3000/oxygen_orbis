@@ -9,7 +9,7 @@ const PAYSTACK_INLINE_URL = 'https://js.paystack.co/v1/inline.js';
 // Default public key fallback for test environments
 export const DEFAULT_PAYSTACK_PUBLIC_KEY = 
   (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_PAYSTACK_PUBLIC_KEY) || 
-  'pk_test_oxygen_orbis_resort_moniya';
+  'pk_test_bf5c17b9b0760ea30fb0cf940c4c95519ecc6e17';
 
 /**
  * Loads the Paystack Inline JS script dynamically into the DOM if not present.
