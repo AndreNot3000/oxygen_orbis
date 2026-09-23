@@ -57,20 +57,25 @@ export function AudioProvider({ children }) {
     audio.addEventListener('error', handleError);
 
     // AUTOMATIC PLAYBACK TRIGGER:
-    // 1. Attempt immediate autoplay
+    // 1. Attempt immediate unmuted autoplay on open
     const tryAutoplay = () => {
       if (audioRef.current) {
-        audioRef.current.volume = 0;
+        audioRef.current.volume = isMuted ? 0 : volume;
         const p = audioRef.current.play();
         if (p !== undefined) {
           p.then(() => {
             hasInteractedRef.current = true;
             setIsPlaying(true);
-            rampVolumeUp(isMuted ? 0 : volume);
             removeListeners();
           }).catch(() => {
-            // Autoplay blocked by browser policy without user gesture:
-            // Stand ready to play on first tap/click/scroll!
+            // If unmuted autoplay blocked by browser policy without prior interaction:
+            // Start audio muted immediately so it is already rolling, then unmute on first gesture!
+            if (audioRef.current && !isMuted) {
+              audioRef.current.muted = true;
+              audioRef.current.play().then(() => {
+                setIsPlaying(true);
+              }).catch(() => {});
+            }
           });
         }
       }
@@ -80,6 +85,7 @@ export function AudioProvider({ children }) {
       if (hasInteractedRef.current) return;
       hasInteractedRef.current = true;
       if (audioRef.current) {
+        audioRef.current.muted = false;
         playWithFade();
       }
       removeListeners();
@@ -90,17 +96,19 @@ export function AudioProvider({ children }) {
       window.removeEventListener('touchstart', handleFirstGesture);
       window.removeEventListener('scroll', handleFirstGesture);
       window.removeEventListener('pointerdown', handleFirstGesture);
+      window.removeEventListener('mousemove', handleFirstGesture);
       window.removeEventListener('keydown', handleFirstGesture);
     };
 
     // Try immediate autoplay first
     tryAutoplay();
 
-    // In case browser policy blocked immediate autoplay, trigger on the very first touch/scroll/click
+    // In case browser policy restricts audio until gesture, trigger on first touch, mousemove, or scroll!
     window.addEventListener('click', handleFirstGesture, { passive: true });
     window.addEventListener('touchstart', handleFirstGesture, { passive: true });
     window.addEventListener('scroll', handleFirstGesture, { passive: true });
     window.addEventListener('pointerdown', handleFirstGesture, { passive: true });
+    window.addEventListener('mousemove', handleFirstGesture, { passive: true });
     window.addEventListener('keydown', handleFirstGesture, { passive: true });
 
     return () => {

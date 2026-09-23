@@ -209,22 +209,22 @@ async function executeTestSuite() {
   // -------------------------------------------------------------
   console.log('\n📦 TEST GROUP 4: Ambient Afro-Lounge Sound System (Card 4.4)');
 
-  runTest('Validates TRACK_INFO metadata (Yoruba Highlife Chill, subtitle, audio file paths)', () => {
-    assert.strictEqual(TRACK_INFO.title, 'Oxygen Orbis • Yoruba Highlife Chill');
-    assert.strictEqual(TRACK_INFO.subtitle, 'Cool & Elegant Nigerian Instrumental');
-    assert.strictEqual(TRACK_INFO.src, '/audio/oxygen-yoruba-lounge.mp3');
+  runTest('Validates TRACK_INFO metadata (Traditional Dundun & Shekere, subtitle, audio file paths)', () => {
+    assert.strictEqual(TRACK_INFO.title, 'Oxygen Orbis • Traditional Dundun & Shekere');
+    assert.strictEqual(TRACK_INFO.subtitle, 'Authentic Indigenous Yoruba Talking Drums');
+    assert.strictEqual(TRACK_INFO.src, '/audio/oxygen-yoruba-talking-drum-shekere.mp3');
     assert.ok(TRACK_INFO.fallbackSrc.startsWith('https://'));
   });
 
-  runTest('Verifies authentic Nigerian Yoruba MP3 audio files exist in public/audio with valid file size (>1MB)', () => {
-    const yorubaPath = path.resolve('public', 'audio', 'oxygen-yoruba-lounge.mp3');
-    const loungePath = path.resolve('public', 'audio', 'oxygen-afro-lounge.mp3');
-    assert.ok(fs.existsSync(yorubaPath), 'Yoruba audio file must exist in public/audio');
-    assert.ok(fs.existsSync(loungePath), 'Afro-lounge audio file must exist in public/audio');
-    const yorubaStats = fs.statSync(yorubaPath);
-    const loungeStats = fs.statSync(loungePath);
-    assert.ok(yorubaStats.size > 1000000, `Yoruba audio size (${yorubaStats.size} bytes) must exceed 1MB`);
-    assert.ok(loungeStats.size > 1000000, `Lounge audio size (${loungeStats.size} bytes) must exceed 1MB`);
+  runTest('Verifies authentic Indigenous Yoruba Talking Drum audio files exist in public/audio with valid file size (>1MB)', () => {
+    const shekerePath = path.resolve('public', 'audio', 'oxygen-yoruba-talking-drum-shekere.mp3');
+    const dundunPath = path.resolve('public', 'audio', 'oxygen-yoruba-traditional-dundun.mp3');
+    assert.ok(fs.existsSync(shekerePath), 'Talking drum & shekere file must exist in public/audio');
+    assert.ok(fs.existsSync(dundunPath), 'Dundun ensemble file must exist in public/audio');
+    const shekereStats = fs.statSync(shekerePath);
+    const dundunStats = fs.statSync(dundunPath);
+    assert.ok(shekereStats.size > 1000000, `Talking drum & shekere size (${shekereStats.size} bytes) must exceed 1MB`);
+    assert.ok(dundunStats.size > 1000000, `Dundun ensemble size (${dundunStats.size} bytes) must exceed 1MB`);
   });
 
   console.log('\n================================================================');

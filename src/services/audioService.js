@@ -1,29 +1,39 @@
 /**
- * 🏨 OXYGEN ORBIS AMBIENT SOUNDSCAPE SERVICE
- * Authentic Nigerian & Yoruba chill instrumental soundscape.
- * High-fidelity royalty-free tracks, audio metadata, and stream fallbacks.
+ * 🏨 OXYGEN ORBIS TRADITIONAL YORUBA SOUNDSCAPE SERVICE
+ * Authentic traditional and indigenous Yoruba music featuring master
+ * talking drum (Dùndún / Gángan) and Shekere percussion.
  */
 
 export const TRACKS_PLAYLIST = [
   {
-    id: 'yoruba-cool',
+    id: 'yoruba-talking-drum-shekere',
+    title: 'Oxygen Orbis • Traditional Dundun & Shekere',
+    subtitle: 'Authentic Indigenous Yoruba Talking Drums',
+    src: '/audio/oxygen-yoruba-talking-drum-shekere.mp3',
+    fallbackSrc: 'https://archive.org/download/lp_drums-of-the-yoruba-of-nigeria_yoruba_0/disc1/02.03.%20Dundun%20Drums%20And%20Shekere%20Rattles.mp3',
+    genre: 'Traditional Yoruba Indigenous Percussion',
+    instruments: 'Dundun (Talking Drums), Shekere (Gourd Rattles), Aro (Iron Chimes)',
+    description: 'Authentic master talking drum conversations and shekere rhythms from Western Nigeria.',
+  },
+  {
+    id: 'yoruba-traditional-dundun',
+    title: 'Oxygen Orbis • Drums of the Yoruba',
+    subtitle: 'Classical Dundun Talking Drum Ensemble',
+    src: '/audio/oxygen-yoruba-traditional-dundun.mp3',
+    fallbackSrc: 'https://archive.org/download/lp_drums-of-the-yoruba-of-nigeria_yoruba_0/disc1/02.01.%20Dundun%20Drums%20%28Talking%20Drums%29.mp3',
+    genre: 'Traditional Yoruba Dundun Ensemble',
+    instruments: 'Iya Ilu (Mother Talking Drum), Gudugudu, Kerikeri, Isaaju',
+    description: 'Traditional royal Dundun talking drum ensemble evoking the grandeur of Oyo and Ibadan heritage.',
+  },
+  {
+    id: 'yoruba-highlife-chill',
     title: 'Oxygen Orbis • Yoruba Highlife Chill',
-    subtitle: 'Cool & Elegant Nigerian Instrumental',
+    subtitle: 'Cool & Elegant Highlife Instrumental',
     src: '/audio/oxygen-yoruba-lounge.mp3',
     fallbackSrc: 'https://archive.org/download/AfrobeatInstrumentalByFreezyBeatzViaInstrumentals.com.ng/Afrobeat%20Instrumental%20By%20Freezy%20Beatz%20via%20instrumentals.com.ng.mp3',
     genre: 'Yoruba Highlife / Neo-Soul Chillout',
-    bpm: 98,
-    description: 'Breezy Nigerian rhythms, elegant guitar tones, and refreshing chillout percussion.',
-  },
-  {
-    id: 'sunset-lounge',
-    title: 'Oxygen Orbis • Sunset Balafon Lounge',
-    subtitle: 'Gentle Afro-Lounge Instrumental',
-    src: '/audio/oxygen-afro-lounge.mp3',
-    fallbackSrc: 'https://archive.org/download/jamendo-553713/01-2142368-Loksii-Chill%20Recreation.mp3',
-    genre: 'Afro-Chillout / Balafon Lounge',
-    bpm: 96,
-    description: 'Warm nylon guitars, gentle balafon rhythms, Rhodes electric piano, and relaxing poolside sub-bass.',
+    instruments: 'Acoustic Guitar, Shakers, Congas, Bass',
+    description: 'Refreshing Nigerian highlife guitar melodies with subtle chillout groove.',
   },
 ];
 

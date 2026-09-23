@@ -84,7 +84,7 @@ export default function AmbientSoundPlayer() {
                   Resort Ambience
                 </span>
                 <p className="text-[11px] text-[#E0C8A8] mt-0.5 leading-snug">
-                  Experience Oxygen Orbis with our refreshing Yoruba Highlife chillout soundscape.
+                  Experience Oxygen Orbis with authentic traditional Yoruba talking drums and shekere.
                 </p>
                 <button
                   onClick={handlePlayAndDismiss}
