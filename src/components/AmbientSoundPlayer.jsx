@@ -1,14 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Pause, Volume2, Volume1, VolumeX, Sparkles, X, Music } from 'lucide-react';
+import { Play, Pause, Volume2, Volume1, VolumeX, Sparkles, X, Music, SkipForward } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAudio } from '../context/AudioContext';
 
 export default function AmbientSoundPlayer() {
-  const { isPlaying, isMuted, volume, setVolume, togglePlay, toggleMute, trackInfo } = useAudio();
+  const { 
+    isPlaying, 
+    isMuted, 
+    volume, 
+    setVolume, 
+    togglePlay, 
+    toggleMute, 
+    trackInfo, 
+    nextTrack 
+  } = useAudio();
+  
   const [showPrompt, setShowPrompt] = useState(false);
   const [showVolumeSlider, setShowVolumeSlider] = useState(false);
 
-  // Soft welcoming prompt after 3.2 seconds if music hasn't started yet
+  // Soft welcoming prompt on larger screens if music hasn't started yet
   useEffect(() => {
     const timer = setTimeout(() => {
       try {
@@ -17,7 +27,7 @@ export default function AmbientSoundPlayer() {
           setShowPrompt(true);
         }
       } catch (_) {}
-    }, 3200);
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, [isPlaying]);
@@ -43,7 +53,7 @@ export default function AmbientSoundPlayer() {
       aria-label="Resort Soundscape"
       className="fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-40 flex flex-col items-start pointer-events-auto select-none font-sans"
     >
-      {/* Welcoming Resort Audio Prompt Tooltip */}
+      {/* Welcoming Resort Audio Prompt Tooltip (Desktop/Tablet) */}
       <AnimatePresence>
         {showPrompt && !isPlaying && (
           <motion.div
@@ -51,7 +61,7 @@ export default function AmbientSoundPlayer() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.94 }}
             transition={{ type: 'spring', stiffness: 380, damping: 25 }}
-            className="hidden sm:block mb-2.5 max-w-[260px] sm:max-w-[290px] bg-[#1A0C06]/95 backdrop-blur-2xl border border-[#C9854A]/40 rounded-2xl p-3 shadow-[0_12px_36px_rgba(0,0,0,0.7)] text-slate-200 relative overflow-hidden"
+            className="hidden sm:block mb-2.5 max-w-[280px] bg-[#1A0C06]/95 backdrop-blur-2xl border border-[#C9854A]/40 rounded-2xl p-3 shadow-[0_12px_36px_rgba(0,0,0,0.7)] text-slate-200 relative overflow-hidden"
           >
             {/* Ambient Warm Light Orb */}
             <div className="absolute -top-10 -left-10 w-24 h-24 bg-[#C9854A]/15 rounded-full blur-xl pointer-events-none" />
@@ -74,7 +84,7 @@ export default function AmbientSoundPlayer() {
                   Resort Ambience
                 </span>
                 <p className="text-[11px] text-[#E0C8A8] mt-0.5 leading-snug">
-                  Experience Oxygen Orbis with our relaxing Sunset Afro-Chill soundscape.
+                  Experience Oxygen Orbis with our refreshing Yoruba Highlife chillout soundscape.
                 </p>
                 <button
                   onClick={handlePlayAndDismiss}
@@ -144,10 +154,23 @@ export default function AmbientSoundPlayer() {
           <span className="text-[10px] sm:text-[11px] font-bold text-white font-serif tracking-wide block leading-tight">
             {trackInfo.title}
           </span>
-          <span className="text-[8px] sm:text-[9px] text-[#C9A070] leading-tight block truncate max-w-[110px] sm:max-w-[140px]">
+          <span className="text-[8px] sm:text-[9px] text-[#C9A070] leading-tight block truncate max-w-[120px] sm:max-w-[160px]">
             {isPlaying ? trackInfo.subtitle : 'Click to Play Ambient'}
           </span>
         </div>
+
+        {/* Next Track Switcher */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            nextTrack();
+          }}
+          aria-label="Next soundscape track"
+          title="Switch Track (Yoruba Highlife / Sunset Lounge)"
+          className="p-1 rounded-full text-[#C9A070] hover:text-white transition-colors cursor-pointer shrink-0"
+        >
+          <SkipForward className="w-3.5 h-3.5" />
+        </button>
 
         {/* Volume / Mute Controls */}
         <div className="flex items-center gap-1.5 pl-1.5 border-l border-[#C9854A]/25">

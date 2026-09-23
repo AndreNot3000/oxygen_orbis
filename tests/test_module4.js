@@ -209,18 +209,22 @@ async function executeTestSuite() {
   // -------------------------------------------------------------
   console.log('\n📦 TEST GROUP 4: Ambient Afro-Lounge Sound System (Card 4.4)');
 
-  runTest('Validates TRACK_INFO metadata (title, subtitle, audio file paths)', () => {
-    assert.strictEqual(TRACK_INFO.title, 'Oxygen Orbis Lounge');
-    assert.strictEqual(TRACK_INFO.subtitle, 'Sunset Afro-Chill Instrumental');
-    assert.strictEqual(TRACK_INFO.src, '/audio/oxygen-afro-lounge.mp3');
+  runTest('Validates TRACK_INFO metadata (Yoruba Highlife Chill, subtitle, audio file paths)', () => {
+    assert.strictEqual(TRACK_INFO.title, 'Oxygen Orbis • Yoruba Highlife Chill');
+    assert.strictEqual(TRACK_INFO.subtitle, 'Cool & Elegant Nigerian Instrumental');
+    assert.strictEqual(TRACK_INFO.src, '/audio/oxygen-yoruba-lounge.mp3');
     assert.ok(TRACK_INFO.fallbackSrc.startsWith('https://'));
   });
 
-  runTest('Verifies authentic MP3 audio file exists in public/audio with valid file size (>1MB)', () => {
-    const audioFilePath = path.resolve('public', 'audio', 'oxygen-afro-lounge.mp3');
-    assert.ok(fs.existsSync(audioFilePath), 'Audio file must exist in public/audio');
-    const stats = fs.statSync(audioFilePath);
-    assert.ok(stats.size > 1000000, `Audio file size (${stats.size} bytes) must exceed 1MB`);
+  runTest('Verifies authentic Nigerian Yoruba MP3 audio files exist in public/audio with valid file size (>1MB)', () => {
+    const yorubaPath = path.resolve('public', 'audio', 'oxygen-yoruba-lounge.mp3');
+    const loungePath = path.resolve('public', 'audio', 'oxygen-afro-lounge.mp3');
+    assert.ok(fs.existsSync(yorubaPath), 'Yoruba audio file must exist in public/audio');
+    assert.ok(fs.existsSync(loungePath), 'Afro-lounge audio file must exist in public/audio');
+    const yorubaStats = fs.statSync(yorubaPath);
+    const loungeStats = fs.statSync(loungePath);
+    assert.ok(yorubaStats.size > 1000000, `Yoruba audio size (${yorubaStats.size} bytes) must exceed 1MB`);
+    assert.ok(loungeStats.size > 1000000, `Lounge audio size (${loungeStats.size} bytes) must exceed 1MB`);
   });
 
   console.log('\n================================================================');

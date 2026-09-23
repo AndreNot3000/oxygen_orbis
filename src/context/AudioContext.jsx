@@ -1,13 +1,22 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
-import { TRACK_INFO } from '../services/audioService.js';
+import { TRACKS_PLAYLIST, TRACK_INFO } from '../services/audioService.js';
 
-export { TRACK_INFO };
+export { TRACKS_PLAYLIST, TRACK_INFO };
 
 const AudioContext = createContext(null);
 
 export function AudioProvider({ children }) {
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  const currentTrack = TRACKS_PLAYLIST[currentTrackIndex] || TRACKS_PLAYLIST[0];
+
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(() => {
+    try {
+      return localStorage.getItem('oxygen_audio_muted') === 'true';
+    } catch (_) {
+      return false;
+    }
+  });
   const [volume, setVolumeState] = useState(() => {
     try {
       const saved = localStorage.getItem('oxygen_audio_volume');
@@ -19,24 +28,25 @@ export function AudioProvider({ children }) {
 
   const audioRef = useRef(null);
   const fadeIntervalRef = useRef(null);
+  const hasInteractedRef = useRef(false);
 
   // Initialize single audio instance
   useEffect(() => {
     const audio = new Audio();
-    audio.src = TRACK_INFO.src;
+    audio.src = currentTrack.src;
     audio.loop = true;
-    audio.preload = 'none'; // Zero bandwidth used until user initiates playback
-    audio.volume = volume;
+    audio.preload = 'auto'; // Preload so it can start immediately when requested
+    audio.volume = isMuted ? 0 : volume;
     audioRef.current = audio;
 
     const handleEnded = () => {
-      setIsPlaying(false);
+      // Loop to next track or repeat
+      nextTrack();
     };
 
     const handleError = () => {
-      // If local asset fails, gracefully fallback to remote archive URL
-      if (audio.src !== TRACK_INFO.fallbackSrc && !audio.src.includes(TRACK_INFO.fallbackSrc)) {
-        audio.src = TRACK_INFO.fallbackSrc;
+      if (audio.src !== currentTrack.fallbackSrc && !audio.src.includes(currentTrack.fallbackSrc)) {
+        audio.src = currentTrack.fallbackSrc;
         if (isPlaying) {
           audio.play().catch(() => setIsPlaying(false));
         }
@@ -46,7 +56,55 @@ export function AudioProvider({ children }) {
     audio.addEventListener('ended', handleEnded);
     audio.addEventListener('error', handleError);
 
+    // AUTOMATIC PLAYBACK TRIGGER:
+    // 1. Attempt immediate autoplay
+    const tryAutoplay = () => {
+      if (audioRef.current) {
+        audioRef.current.volume = 0;
+        const p = audioRef.current.play();
+        if (p !== undefined) {
+          p.then(() => {
+            hasInteractedRef.current = true;
+            setIsPlaying(true);
+            rampVolumeUp(isMuted ? 0 : volume);
+            removeListeners();
+          }).catch(() => {
+            // Autoplay blocked by browser policy without user gesture:
+            // Stand ready to play on first tap/click/scroll!
+          });
+        }
+      }
+    };
+
+    const handleFirstGesture = () => {
+      if (hasInteractedRef.current) return;
+      hasInteractedRef.current = true;
+      if (audioRef.current) {
+        playWithFade();
+      }
+      removeListeners();
+    };
+
+    const removeListeners = () => {
+      window.removeEventListener('click', handleFirstGesture);
+      window.removeEventListener('touchstart', handleFirstGesture);
+      window.removeEventListener('scroll', handleFirstGesture);
+      window.removeEventListener('pointerdown', handleFirstGesture);
+      window.removeEventListener('keydown', handleFirstGesture);
+    };
+
+    // Try immediate autoplay first
+    tryAutoplay();
+
+    // In case browser policy blocked immediate autoplay, trigger on the very first touch/scroll/click
+    window.addEventListener('click', handleFirstGesture, { passive: true });
+    window.addEventListener('touchstart', handleFirstGesture, { passive: true });
+    window.addEventListener('scroll', handleFirstGesture, { passive: true });
+    window.addEventListener('pointerdown', handleFirstGesture, { passive: true });
+    window.addEventListener('keydown', handleFirstGesture, { passive: true });
+
     return () => {
+      removeListeners();
       if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
       audio.removeEventListener('ended', handleEnded);
       audio.removeEventListener('error', handleError);
@@ -54,6 +112,44 @@ export function AudioProvider({ children }) {
       audio.src = '';
     };
   }, []);
+
+  // Sync audio source when track changes
+  const switchTrack = (index) => {
+    const nextIdx = (index + TRACKS_PLAYLIST.length) % TRACKS_PLAYLIST.length;
+    setCurrentTrackIndex(nextIdx);
+    const track = TRACKS_PLAYLIST[nextIdx];
+
+    if (audioRef.current) {
+      const wasPlaying = isPlaying;
+      audioRef.current.src = track.src;
+      audioRef.current.currentTime = 0;
+      if (wasPlaying) {
+        playWithFade();
+      }
+    }
+  };
+
+  const nextTrack = () => switchTrack(currentTrackIndex + 1);
+  const prevTrack = () => switchTrack(currentTrackIndex - 1);
+
+  const rampVolumeUp = (targetVol) => {
+    if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
+    const steps = 16;
+    const stepTime = 800 / steps;
+    const volIncrement = targetVol / steps;
+    let currentStep = 0;
+
+    fadeIntervalRef.current = setInterval(() => {
+      currentStep++;
+      if (currentStep >= steps || !audioRef.current) {
+        if (audioRef.current) audioRef.current.volume = targetVol;
+        clearInterval(fadeIntervalRef.current);
+        fadeIntervalRef.current = null;
+      } else {
+        audioRef.current.volume = Math.min(targetVol, currentStep * volIncrement);
+      }
+    }, stepTime);
+  };
 
   // Update volume when user changes slider
   const setVolume = (newVol) => {
@@ -83,25 +179,10 @@ export function AudioProvider({ children }) {
       playPromise
         .then(() => {
           setIsPlaying(true);
-          // 800ms fade-in ramp
-          const steps = 16;
-          const stepTime = 800 / steps;
-          const volIncrement = targetVol / steps;
-          let currentStep = 0;
-
-          fadeIntervalRef.current = setInterval(() => {
-            currentStep++;
-            if (currentStep >= steps) {
-              audio.volume = targetVol;
-              clearInterval(fadeIntervalRef.current);
-              fadeIntervalRef.current = null;
-            } else {
-              audio.volume = Math.min(targetVol, currentStep * volIncrement);
-            }
-          }, stepTime);
+          rampVolumeUp(targetVol);
         })
         .catch((err) => {
-          console.warn('Audio play request interrupted or prevented by browser:', err);
+          console.warn('Audio play request prevented by browser:', err);
           setIsPlaying(false);
         });
     }
@@ -122,19 +203,22 @@ export function AudioProvider({ children }) {
 
     fadeIntervalRef.current = setInterval(() => {
       currentStep++;
-      if (currentStep >= steps) {
-        audio.pause();
-        audio.volume = isMuted ? 0 : volume;
+      if (currentStep >= steps || !audioRef.current) {
+        if (audioRef.current) {
+          audioRef.current.pause();
+          audioRef.current.volume = isMuted ? 0 : volume;
+        }
         setIsPlaying(false);
         clearInterval(fadeIntervalRef.current);
         fadeIntervalRef.current = null;
       } else {
-        audio.volume = Math.max(0, startVol - currentStep * volDecrement);
+        audioRef.current.volume = Math.max(0, startVol - currentStep * volDecrement);
       }
     }, stepTime);
   };
 
   const togglePlay = () => {
+    hasInteractedRef.current = true;
     if (isPlaying) {
       pauseWithFade();
     } else {
@@ -145,6 +229,10 @@ export function AudioProvider({ children }) {
   const toggleMute = () => {
     const nextMuted = !isMuted;
     setIsMuted(nextMuted);
+    try {
+      localStorage.setItem('oxygen_audio_muted', nextMuted.toString());
+    } catch (_) {}
+
     if (audioRef.current) {
       audioRef.current.volume = nextMuted ? 0 : volume;
     }
@@ -159,7 +247,12 @@ export function AudioProvider({ children }) {
         setVolume,
         togglePlay,
         toggleMute,
-        trackInfo: TRACK_INFO,
+        trackInfo: currentTrack,
+        playlist: TRACKS_PLAYLIST,
+        currentTrackIndex,
+        nextTrack,
+        prevTrack,
+        switchTrack,
       }}
     >
       {children}
