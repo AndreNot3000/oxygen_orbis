@@ -9,6 +9,9 @@ const HERO_CONFIG = {
   // Center expanding video (served straight from public/)
   videoSrc: "/my-resort-video.mp4",
 
+  // Playback speed of the video (1.0 = normal speed, 0.75 = serene luxury slow-motion)
+  playbackRate: 0.75,
+
   // Preview poster displayed while the video buffers
   posterSrc: "/my-resort-bg.png",
 
@@ -26,6 +29,7 @@ export default function Hero({
   onOpenCalendar, 
   onProgressChange,
   videoSrc = HERO_CONFIG.videoSrc,
+  playbackRate = HERO_CONFIG.playbackRate,
   posterSrc = HERO_CONFIG.posterSrc,
   bgImage = HERO_CONFIG.bgImage,
   titleLine1 = HERO_CONFIG.titleLine1,
@@ -46,6 +50,15 @@ export default function Hero({
 
   const progressRef = useRef(0);
   progressRef.current = progress;
+
+  const videoRef = useRef(null);
+
+  // Set serene luxury slow-motion playback speed on the hero video
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.playbackRate = playbackRate;
+    }
+  }, [playbackRate, videoSrc]);
 
   // Handle window resizing
   useEffect(() => {
@@ -213,6 +226,7 @@ export default function Hero({
           }}
         >
           <video
+            ref={videoRef}
             key={videoSrc}
             src={videoSrc}
             autoPlay
@@ -223,6 +237,11 @@ export default function Hero({
             disablePictureInPicture
             disableRemotePlayback
             poster={posterSrc}
+            onLoadedMetadata={() => {
+              if (videoRef.current) {
+                videoRef.current.playbackRate = playbackRate;
+              }
+            }}
             className="w-full h-full object-cover pointer-events-none"
           />
 
