@@ -171,7 +171,9 @@ export default function App() {
         />
 
         {/* Resort Experiences & Mac Foster Nightlife */}
-        <AmenitiesSection />
+        <AmenitiesSection
+          onOpenBooking={() => handleOpenBooking()}
+        />
 
         {/* The Lagos-to-Ibadan 2-Hour Train Staycation Advantage */}
         <LagosEscapeSection

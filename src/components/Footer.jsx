@@ -76,8 +76,9 @@ export default function Footer({ onOpenPitch, onOpenBooking, onOpenPms }) {
         .kex-footer {
           position: relative;
           width: 100%;
-          height: 100svh;
-          max-height: 100svh;
+          height: auto;
+          min-height: auto;
+          max-height: none;
           overflow: hidden;
           color: #F5E6D0;
           font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
@@ -187,17 +188,16 @@ export default function Footer({ onOpenPitch, onOpenBooking, onOpenPms }) {
           }
         }
 
-        /* Inner Upper Content Wrapper — Flex Layout to guarantee 100% viewport fit */
+        /* Inner Upper Content Wrapper — Fluid Balanced Layout without excess vertical void */
         .kex-footer-inner {
           position: relative;
           z-index: 3;
           width: 100%;
-          height: 100%;
+          height: auto;
           display: flex;
           flex-direction: column;
-          justify-content: space-between;
           overflow: hidden;
-          padding: clamp(26px, 3.2vw, 44px) clamp(30px, 3.5vw, 54px) 0;
+          padding: clamp(32px, 3.5vw, 48px) clamp(30px, 4vw, 64px) 0;
           box-sizing: border-box;
         }
 
@@ -383,13 +383,13 @@ export default function Footer({ onOpenPitch, onOpenBooking, onOpenPms }) {
           transform: translateY(-50%) scale(1);
         }
 
-        /* Oversized Brand Area — Pinned Flush to the Absolute Bottom Edge */
+        /* Oversized Brand Area — Pinned Below Navigation with Balanced Proportions */
         .kex-brand-zone {
           position: relative;
           width: 100%;
-          margin-top: auto;
+          margin-top: clamp(32px, 4vw, 54px);
           margin-bottom: 0;
-          padding-bottom: 5px;
+          padding-bottom: clamp(16px, 2vw, 28px);
           display: flex;
           align-items: flex-end;
           justify-content: center;
@@ -534,31 +534,6 @@ export default function Footer({ onOpenPitch, onOpenBooking, onOpenPms }) {
           }
         }
 
-        /* Short Desktop Height (e.g. 1366x768, 1440x900 or browser window with tabs) */
-        @media (max-height: 760px) and (min-width: 701px) {
-          .kex-footer-inner {
-            padding-top: 20px;
-          }
-          .kex-columns {
-            margin-top: 18px;
-          }
-          .kex-column-title {
-            margin-bottom: 8px;
-          }
-          .kex-link-list {
-            gap: 6px;
-          }
-          .kex-footer-link {
-            font-size: 12.5px;
-          }
-          .kex-brand-zone {
-            padding-bottom: 4px;
-          }
-          .kex-brand {
-            font-size: clamp(52px, 8.8vw, 120px);
-            line-height: 0.78;
-          }
-        }
 
         /* Tablet Layout */
         @media (max-width: 900px) {

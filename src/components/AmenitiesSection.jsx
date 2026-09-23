@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Sparkles, GlassWater, Moon, Utensils, Dumbbell, PartyPopper, CheckCircle } from 'lucide-react';
 import { RESORT_EXPERIENCES } from '../data/resortData';
 
-export default function AmenitiesSection() {
+export default function AmenitiesSection({ onOpenBooking }) {
   const [activeTab, setActiveTab] = useState(0);
 
   const icons = [
@@ -96,14 +96,20 @@ export default function AmenitiesSection() {
               </div>
             </div>
 
-            <div className="pt-4 border-t border-[#4A2010] flex items-center justify-between">
+            <div className="pt-4 border-t border-[#4A2010] flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
               <a
                 href="#rooms"
-                className="gold-gradient-btn px-5 py-2.5 rounded-xl text-xs font-bold inline-flex items-center gap-1.5"
+                onClick={(e) => {
+                  if (onOpenBooking) {
+                    e.preventDefault();
+                    onOpenBooking();
+                  }
+                }}
+                className="gold-gradient-btn px-6 py-3 rounded-xl text-xs font-bold w-full sm:w-auto inline-flex items-center justify-center gap-1.5 shadow-lg shadow-[#C9854A]/20 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer text-center"
               >
                 <span>Book Stay To Experience</span>
               </a>
-              <span className="text-[11px] text-[#C9A070]">
+              <span className="text-[11px] text-[#C9A070] text-center sm:text-right font-light">
                 Open to guests &amp; visitors
               </span>
             </div>
