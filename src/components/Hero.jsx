@@ -371,7 +371,7 @@ export default function Hero({
           {/* Responsive Two-Column Text Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-[17px] leading-[32px] text-[#C9A070] mb-14">
             <p className="font-light">
-              Nestled just 6 minutes from the Moniya Lagos–Ibadan railway terminal, Oxygen Orbis Resort is your private sanctuary in Southwest Nigeria — featuring 40 curated suites across four luxury tiers, an Olympic swimming pool, and private balconies framing panoramic landscape views.
+              Nestled just 10–15 minutes from the Moniya Lagos–Ibadan railway terminal, Oxygen Orbis Resort is your private sanctuary in Southwest Nigeria — featuring 40 curated suites across four luxury tiers, an Olympic swimming pool, and private balconies framing panoramic landscape views.
             </p>
             <p className="font-light">
               From serene poolside mornings to electric nights at the Mac Foster Lounge, every stay is an experience designed to exceed expectation. 24/7 uninterrupted power, high-speed fiber Wi-Fi, and a dedicated concierge team ensure your comfort from arrival to departure.
@@ -382,7 +382,7 @@ export default function Hero({
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-14">
             <div className="bg-white/[0.03] border border-[#C9854A]/20 hover:border-[#C9854A]/60 rounded-2xl p-6 transition-all hover:shadow-[0_0_30px_rgba(201,133,74,0.08)]">
               <p className="text-[11px] uppercase tracking-[0.25em] text-[#C9854A]/70 mb-2 font-medium">LOCATION</p>
-              <p className="text-[18px] font-semibold text-white">6 min · Moniya Terminal</p>
+              <p className="text-[18px] font-semibold text-white">10–15 min · Moniya Terminal</p>
             </div>
             <div className="bg-white/[0.03] border border-[#C9854A]/20 hover:border-[#C9854A]/60 rounded-2xl p-6 transition-all hover:shadow-[0_0_30px_rgba(201,133,74,0.08)]">
               <p className="text-[11px] uppercase tracking-[0.25em] text-[#C9854A]/70 mb-2 font-medium">SUITES</p>
@@ -411,7 +411,7 @@ export default function Hero({
                   Step into 40 Curated Suites &amp; Rooftop Lounge
                 </h3>
                 <p className="text-sm text-[#E0C8A8] font-light leading-relaxed">
-                  Just 6 minutes from the Moniya Lagos-Ibadan train terminal. 24/7 power, Olympic swimming pool, private balconies, and vibrant Mac Foster nightlife.
+                  Just 10–15 minutes from the Moniya Lagos-Ibadan train terminal. 24/7 power, Olympic swimming pool, private balconies, and vibrant Mac Foster nightlife.
                 </p>
               </div>
 

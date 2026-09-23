@@ -11,7 +11,7 @@ export const RESORT_INFO = {
   reservationsEmail: "oxygenorbis@gmail.com",
   instagram: "@oxygenorbis",
   instagramUrl: "https://instagram.com/oxygenorbis",
-  railwayDistance: "6 minutes from Lagos-Ibadan Moniya Railway Terminal",
+  railwayDistance: "10-15 minutes from Lagos-Ibadan Moniya Railway Terminal",
   attractionDistance: "12 minutes from IITA Forest Reserve & Ecotourism Center",
   operatingHours: "24/7 Front Desk, Security & Guaranteed Power Backup",
   checkInTime: "2:00 PM",
@@ -577,7 +577,7 @@ export const TESTIMONIALS_DATA = [
 export const FAQS_DATA = [
   {
     q: "How close is Oxygen Orbis to the Lagos-Ibadan Moniya Railway Station?",
-    a: "We are located just 6 minutes driving distance from the Moniya Railway Terminal (at 11 Aare Onibon Road). We can arrange a private VIP pickup to meet you right as you step off the train.",
+    a: "We are located just 10-15 minutes driving distance from the Moniya Railway Terminal (at 11 Aare Onibon Road). We can arrange a private VIP pickup to meet you right as you step off the train.",
   },
   {
     q: "Do you guarantee 24/7 uninterrupted power and security?",

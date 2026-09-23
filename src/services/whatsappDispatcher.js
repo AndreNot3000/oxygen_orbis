@@ -55,7 +55,7 @@ ${specialRequests ? `\n📝 *Special Preferences:* ${specialRequests}\n` : ''}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 🚆 *LAGOS TRAIN ARRIVAL ADVICE*
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
-Oxygen Orbis is located just *6 minutes* driving distance from the Lagos-Ibadan Moniya Railway Station. If you booked VIP pickup, our chauffeur will await your arrival outside the terminal with an Oxygen Orbis placard.
+Oxygen Orbis is located just *10-15 minutes* driving distance from the Lagos-Ibadan Moniya Railway Station. If you booked VIP pickup, our chauffeur will await your arrival outside the terminal with an Oxygen Orbis placard.
 
 📍 *Address:* 11 Aare Onibon Road, Moniya, Ibadan
 📞 *24/7 Front Desk / Concierge:* ${RESORT_INFO.phone}

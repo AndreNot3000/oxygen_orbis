@@ -1,4 +1,4 @@
-﻿# 📍 Local SEO & Google Business Profile Strategy: Oxygen Orbis Hotel & Resort
+# 📍 Local SEO & Google Business Profile Strategy: Oxygen Orbis Hotel & Resort
 
 This strategic playbook guides Oxygen Orbis management on dominating local search results in **Moniya, Ibadan**, and capturing high-intent Lagos weekend staycationers arriving via the Lagos-Ibadan Railway.
 
@@ -12,7 +12,7 @@ This strategic playbook guides Oxygen Orbis management on dominating local searc
 | **Primary Category** | `Hotel` |
 | **Secondary Categories** | `Resort Hotel`, `Night Club`, `Lounge`, `Swimming Facility` |
 | **Address** | `11 Aare Onibon Road, Moniya, Ibadan, Oyo State, Nigeria` |
-| **Plus Code / GPS** | `7.5250, 3.9167` (6 minutes from Moniya Train Terminal) |
+| **Plus Code / GPS** | `7.5250, 3.9167` (10-15 minutes from Moniya Train Terminal) |
 | **Phone Number** | `+234 903 398 7126` |
 | **Direct Booking URL** | `https://oxygenorbis.com/?utm_source=google&utm_medium=gbp_direct` |
 | **Reservations Link** | `https://oxygenorbis.com/#rooms` |

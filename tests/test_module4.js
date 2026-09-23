@@ -78,7 +78,7 @@ async function executeTestSuite() {
     assert.ok(text.includes('OXYGEN ORBIS HOTEL & RESORT'));
     assert.ok(text.includes('#OXY-489218'));
     assert.ok(text.includes('Room 204'));
-    assert.ok(text.includes('6 minutes'));
+    assert.ok(text.includes('10-15 minutes'));
     assert.ok(text.includes('Moniya Railway Station'));
     assert.ok(text.includes('Moniya Train VIP Pickup'));
   });

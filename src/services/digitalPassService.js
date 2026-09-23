@@ -329,7 +329,7 @@ export function generatePrintableVoucherHtml(booking, qrDataUrl = '') {
       <div class="instructions">
         <strong>📱 30-Second Reception Check-In:</strong><br>
         Present this voucher or QR barcode on your smartphone at reception.<br>
-        6 minutes driving distance from the Lagos-Ibadan Moniya Railway Station.
+        10-15 minutes driving distance from the Lagos-Ibadan Moniya Railway Station.
       </div>
       <div style="width: 70px; height: 70px; background: #000; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-family: monospace; font-size: 10px;">
         [QR CODE]

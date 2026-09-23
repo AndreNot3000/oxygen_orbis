@@ -58,7 +58,7 @@ export default function LocationSection() {
                   <Train className="w-4 h-4 text-[#C9854A] shrink-0" />
                   <div>
                     <span className="text-white font-semibold block">Moniya Railway Station</span>
-                    <span className="text-[#C9A070] text-[11px]">6 minutes driving distance</span>
+                    <span className="text-[#C9A070] text-[11px]">10-15 minutes driving distance</span>
                   </div>
                 </div>
 
@@ -121,7 +121,7 @@ export default function LocationSection() {
                     </div>
                     <h5 className="font-serif font-bold text-white text-sm">Oxygen Orbis Hotel & Resort</h5>
                     <p className="text-[11px] text-[#C9854A] mt-0.5">11 Aare Onibon Road, Moniya</p>
-                    <p className="text-[10px] text-[#C9A070] mt-1">6 min drive from Moniya Train Station</p>
+                    <p className="text-[10px] text-[#C9A070] mt-1">10-15 min drive from Moniya Train Station</p>
                   </div>
                 </div>
 

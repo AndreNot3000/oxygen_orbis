@@ -12,9 +12,9 @@ export default function LagosEscapeSection({ onOpenBooking }) {
     },
     {
       step: '02',
-      tag: '6-Min Chauffeur',
+      tag: '10-15 Min Chauffeur',
       title: 'Moniya Station VIP Transfer',
-      desc: 'Step off at Moniya Station and let our private chauffeur escort you directly to 11 Aare Onibon Road in just 6 minutes.',
+      desc: 'Step off at Moniya Station and let our private chauffeur escort you directly to 11 Aare Onibon Road in just 10-15 minutes.',
       icon: Car,
     },
     {
@@ -49,7 +49,7 @@ export default function LagosEscapeSection({ onOpenBooking }) {
             Escape the City Rush. Immerse in Pure Serenity.
           </h2>
           <p className="text-[#E0C8A8] text-sm sm:text-base font-light max-w-2xl mx-auto leading-relaxed">
-            Nestled at <strong className="text-white font-medium">11 Aare Onibon Road in Moniya</strong>, Oxygen Orbis is a tranquil haven moments from the lush IITA Forest Reserve and just a 6-minute private chauffeur drive from Moniya Train Station. Trade the noise and gridlock for sparkling pools, rooftop mixology, and vibrant nightlife.
+            Nestled at <strong className="text-white font-medium">11 Aare Onibon Road in Moniya</strong>, Oxygen Orbis is a tranquil haven moments from the lush IITA Forest Reserve and just a 10-15 minute private chauffeur drive from Moniya Train Station. Trade the noise and gridlock for sparkling pools, rooftop mixology, and vibrant nightlife.
           </p>
         </div>
 
