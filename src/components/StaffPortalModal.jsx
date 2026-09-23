@@ -598,7 +598,7 @@ export default function StaffPortalModal({ isOpen, onClose }) {
             { id: 'timeline', label: 'Timeline Gantt (40 Rooms)', icon: Calendar },
             { id: 'scanner', label: '5-Sec QR Check-In', icon: QrCode },
             { id: 'housekeeping', label: 'Housekeeping Queue', icon: RefreshCw, badge: stats.dirtyCount, badgeColor: 'bg-amber-500/20 text-amber-300 border-amber-500/40' },
-            { id: 'transfers', label: 'Wire Transfers', icon: DollarSign, badge: pendingTransfers.length, badgeColor: 'bg-blue-500/20 text-blue-300 border-blue-500/40' },
+            { id: 'transfers', label: 'Pending Transfers', icon: DollarSign, badge: pendingTransfers.length, badgeColor: 'bg-blue-500/20 text-blue-300 border-blue-500/40' },
             { id: 'walkin', label: 'Walk-In / Phone Booking', icon: UserCheck },
           ].map((tab) => {
             const Icon = tab.icon;
