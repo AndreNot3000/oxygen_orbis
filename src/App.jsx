@@ -17,14 +17,14 @@ import WhatsAppButton from './components/WhatsAppButton';
 import { ROOMS_DATA } from './data/resortData';
 
 export default function App() {
-  // Persistent currency state
-  const [currency, setCurrency] = useState(() => {
-    return localStorage.getItem('oxygen_currency') || 'NGN';
-  });
+  // Primary and only resort currency is Nigerian Naira (₦ NGN)
+  const currency = 'NGN';
 
   useEffect(() => {
-    localStorage.setItem('oxygen_currency', currency);
-  }, [currency]);
+    try {
+      localStorage.setItem('oxygen_currency', 'NGN');
+    } catch (_) {}
+  }, []);
 
   // Modal states
   const [isBookingOpen, setIsBookingOpen] = useState(false);
@@ -138,7 +138,6 @@ export default function App() {
       {/* Navigation */}
       <Navbar
         currency={currency}
-        setCurrency={setCurrency}
         visible={showNavbar}
         onMouseEnter={() => setIsHeaderHovered(true)}
         onMouseLeave={() => setIsHeaderHovered(false)}

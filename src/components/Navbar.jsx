@@ -11,8 +11,7 @@ const InstagramIcon = ({ className = "w-3.5 h-3.5" }) => (
 );
 
 export default function Navbar({ 
-  currency, 
-  setCurrency, 
+  currency = 'NGN', 
   onOpenBooking, 
   onOpenPitch, 
   onOpenCalendar, 
@@ -150,29 +149,6 @@ export default function Navbar({
 
           {/* Actions & CTA Cluster */}
           <div className="hidden md:flex items-center space-x-3.5">
-            {/* Currency Switcher */}
-            <div className="bg-white/[0.03] border border-white/[0.08] rounded-full p-0.5 flex items-center text-[11px] font-medium">
-              <button
-                onClick={() => setCurrency('NGN')}
-                className={`px-2.5 py-1 rounded-full transition-all duration-200 cursor-pointer ${
-                  currency === 'NGN'
-                    ? 'bg-[#C9854A] text-[#1A0C06] font-bold shadow-sm'
-                    : 'text-[#C9A070] hover:text-white'
-                }`}
-              >
-                ₦ NGN
-              </button>
-              <button
-                onClick={() => setCurrency('USD')}
-                className={`px-2.5 py-1 rounded-full transition-all duration-200 cursor-pointer ${
-                  currency === 'USD'
-                    ? 'bg-[#C9854A] text-[#1A0C06] font-bold shadow-sm'
-                    : 'text-[#C9A070] hover:text-white'
-                }`}
-              >
-                $ USD
-              </button>
-            </div>
 
             {/* Pitch Deck Button - Refined Emerald Glass */}
             <button
@@ -224,28 +200,6 @@ export default function Navbar({
               <span className="text-[8px] tracking-[0.3em] text-[#C9854A] uppercase font-light">
                 Hotel & Resort • Moniya
               </span>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between pb-4 border-b border-[#C9854A]/[0.15]">
-            <span className="text-xs uppercase tracking-widest text-[#C9A070]">Currency</span>
-            <div className="bg-white/[0.03] border border-white/[0.08] rounded-full p-0.5 flex items-center text-xs">
-              <button
-                onClick={() => setCurrency('NGN')}
-                className={`px-3 py-1 rounded-full ${
-                  currency === 'NGN' ? 'bg-[#C9854A] text-black font-bold' : 'text-[#C9A070]'
-                }`}
-              >
-                ₦ NGN
-              </button>
-              <button
-                onClick={() => setCurrency('USD')}
-                className={`px-3 py-1 rounded-full ${
-                  currency === 'USD' ? 'bg-[#C9854A] text-black font-bold' : 'text-[#C9A070]'
-                }`}
-              >
-                $ USD
-              </button>
             </div>
           </div>
 
