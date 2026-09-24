@@ -93,11 +93,11 @@ export default function AmbientSoundPlayer() {
                     Resort Ambience
                   </span>
                   <span className="text-[9px] bg-[#C9854A]/20 text-[#E0A86A] px-1.5 py-0.2 rounded border border-[#C9854A]/30 font-medium">
-                    YORUBA
+                    {trackInfo.genre && trackInfo.genre.includes('Jazz') ? 'COOL JAZZ' : 'YORUBA'}
                   </span>
                 </div>
                 <p className="text-[11px] text-[#E0C8A8] mt-1 leading-snug">
-                  Tap anywhere on screen to experience traditional Yoruba talking drum melodies.
+                  Tap anywhere on screen to immerse in cool jazz saxophone and relaxing resort melodies.
                 </p>
                 <div className="mt-2.5 flex items-center gap-2">
                   <span className="text-[10px] font-bold text-[#1A0C06] bg-gradient-to-r from-[#C9854A] to-[#E0A86A] px-2.5 py-1 rounded-lg flex items-center gap-1.5 shadow-sm hover:scale-102 transition-transform">
@@ -179,7 +179,7 @@ export default function AmbientSoundPlayer() {
             nextTrack();
           }}
           aria-label="Next soundscape track"
-          title="Switch Track (Yoruba Highlife / Sunset Lounge)"
+          title="Switch Track (Cool Jazz / Traditional Drums / Highlife)"
           className="p-1 rounded-full text-[#C9A070] hover:text-white transition-colors cursor-pointer shrink-0"
         >
           <SkipForward className="w-3.5 h-3.5" />

@@ -1,10 +1,30 @@
 /**
- * 🏨 OXYGEN ORBIS TRADITIONAL YORUBA SOUNDSCAPE SERVICE
- * Authentic traditional and indigenous Yoruba music featuring master
- * talking drum (Dùndún / Gángan) and Shekere percussion.
+ * 🏨 OXYGEN ORBIS RESORT SOUNDSCAPE SERVICE
+ * Curated playlist featuring cool jazz lounge as default primary track,
+ * with authentic traditional Yoruba talking drums and highlife tracks.
  */
 
 export const TRACKS_PLAYLIST = [
+  {
+    id: 'cool-jazz-lounge',
+    title: 'Oxygen Orbis • Cool Jazz Lounge',
+    subtitle: 'Smooth Tenor Sax & Velvet Rhodes Piano',
+    src: '/audio/oxygen-cool-jazz-lounge.mp3',
+    fallbackSrc: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/On%20the%20Cool%20Side.mp3',
+    genre: 'Cool Jazz / Midnight Luxury Lounge',
+    instruments: 'Tenor Saxophone, Rhodes Electric Piano, Muted Trumpet, Upright Bass, Jazz Kit',
+    description: 'Sophisticated, calming cool jazz instrumental with warm saxophone and electric piano melodies.',
+  },
+  {
+    id: 'cool-jazz-vibes',
+    title: 'Oxygen Orbis • Midnight Cool Vibes',
+    subtitle: 'Calming Vibraphone & Acoustic Bass',
+    src: '/audio/oxygen-cool-jazz-vibes.mp3',
+    fallbackSrc: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Cool%20Vibes.mp3',
+    genre: 'West Coast Cool Jazz / Noir Lounge',
+    instruments: 'Vibraphone, Upright Double Bass, Jazz Brushes',
+    description: 'Peaceful and spacious cool jazz vibraphone session evoking tranquil resort evenings.',
+  },
   {
     id: 'yoruba-talking-drum-shekere',
     title: 'Oxygen Orbis • Traditional Dundun & Shekere',

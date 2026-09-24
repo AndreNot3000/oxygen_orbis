@@ -209,20 +209,24 @@ async function executeTestSuite() {
   // -------------------------------------------------------------
   console.log('\n📦 TEST GROUP 4: Ambient Afro-Lounge Sound System (Card 4.4)');
 
-  runTest('Validates TRACK_INFO metadata (Traditional Dundun & Shekere, subtitle, audio file paths)', () => {
-    assert.strictEqual(TRACK_INFO.title, 'Oxygen Orbis • Traditional Dundun & Shekere');
-    assert.strictEqual(TRACK_INFO.subtitle, 'Authentic Indigenous Yoruba Talking Drums');
-    assert.strictEqual(TRACK_INFO.src, '/audio/oxygen-yoruba-talking-drum-shekere.mp3');
+  runTest('Validates TRACK_INFO metadata (Cool Jazz Lounge, subtitle, audio file paths)', () => {
+    assert.strictEqual(TRACK_INFO.title, 'Oxygen Orbis • Cool Jazz Lounge');
+    assert.strictEqual(TRACK_INFO.subtitle, 'Smooth Tenor Sax & Velvet Rhodes Piano');
+    assert.strictEqual(TRACK_INFO.src, '/audio/oxygen-cool-jazz-lounge.mp3');
     assert.ok(TRACK_INFO.fallbackSrc.startsWith('https://'));
   });
 
-  runTest('Verifies authentic Indigenous Yoruba Talking Drum audio files exist in public/audio with valid file size (>1MB)', () => {
+  runTest('Verifies authentic Cool Jazz Lounge and Yoruba audio files exist in public/audio with valid file size (>1MB)', () => {
+    const jazzPath = path.resolve('public', 'audio', 'oxygen-cool-jazz-lounge.mp3');
     const shekerePath = path.resolve('public', 'audio', 'oxygen-yoruba-talking-drum-shekere.mp3');
     const dundunPath = path.resolve('public', 'audio', 'oxygen-yoruba-traditional-dundun.mp3');
+    assert.ok(fs.existsSync(jazzPath), 'Cool Jazz audio file must exist in public/audio');
     assert.ok(fs.existsSync(shekerePath), 'Talking drum & shekere file must exist in public/audio');
     assert.ok(fs.existsSync(dundunPath), 'Dundun ensemble file must exist in public/audio');
+    const jazzStats = fs.statSync(jazzPath);
     const shekereStats = fs.statSync(shekerePath);
     const dundunStats = fs.statSync(dundunPath);
+    assert.ok(jazzStats.size > 1000000, `Cool Jazz size (${jazzStats.size} bytes) must exceed 1MB`);
     assert.ok(shekereStats.size > 1000000, `Talking drum & shekere size (${shekereStats.size} bytes) must exceed 1MB`);
     assert.ok(dundunStats.size > 1000000, `Dundun ensemble size (${dundunStats.size} bytes) must exceed 1MB`);
   });
