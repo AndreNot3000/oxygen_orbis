@@ -26,21 +26,33 @@ export function AudioProvider({ children }) {
     }
   });
 
+  const [autoplayBlocked, setAutoplayBlocked] = useState(false);
   const audioRef = useRef(null);
   const fadeIntervalRef = useRef(null);
-  const hasInteractedRef = useRef(false);
+  const hasStartedRef = useRef(false);
 
-  // Initialize single audio instance
+  // Helper to start audio safely
+  const startAudio = () => {
+    const audio = audioRef.current;
+    if (!audio) return Promise.reject(new Error('Audio element not initialized'));
+    audio.muted = false;
+    audio.volume = isMuted ? 0 : volume;
+    return audio.play();
+  };
+
+  // Initialize single audio instance and persistent activation listeners
   useEffect(() => {
     const audio = new Audio();
     audio.src = currentTrack.src;
     audio.loop = true;
-    audio.preload = 'auto'; // Preload so it can start immediately when requested
+    audio.preload = 'auto';
+    audio.playsInline = true;
+    audio.setAttribute('playsinline', 'true');
+    audio.setAttribute('webkit-playsinline', 'true');
     audio.volume = isMuted ? 0 : volume;
     audioRef.current = audio;
 
     const handleEnded = () => {
-      // Loop to next track or repeat
       nextTrack();
     };
 
@@ -56,63 +68,58 @@ export function AudioProvider({ children }) {
     audio.addEventListener('ended', handleEnded);
     audio.addEventListener('error', handleError);
 
-    // AUTOMATIC PLAYBACK TRIGGER:
-    // 1. Attempt immediate unmuted autoplay on open
-    const tryAutoplay = () => {
-      if (audioRef.current) {
-        audioRef.current.volume = isMuted ? 0 : volume;
-        const p = audioRef.current.play();
-        if (p !== undefined) {
-          p.then(() => {
-            hasInteractedRef.current = true;
-            setIsPlaying(true);
-            removeListeners();
-          }).catch(() => {
-            // If unmuted autoplay blocked by browser policy without prior interaction:
-            // Start audio muted immediately so it is already rolling, then unmute on first gesture!
-            if (audioRef.current && !isMuted) {
-              audioRef.current.muted = true;
-              audioRef.current.play().then(() => {
-                setIsPlaying(true);
-              }).catch(() => {});
-            }
-          });
-        }
-      }
+    // PERSISTENT TOUCH & GESTURE ACTIVATION (Crucial for Android Chrome & mobile browsers):
+    // Chrome on Android strictly blocks unmuted autoplay on load with NotAllowedError.
+    // It requires a direct transient user activation (touchend, pointerup, click, keydown).
+    const GESTURE_EVENTS = ['click', 'touchend', 'pointerup', 'keydown'];
+
+    const handleUserGesture = () => {
+      if (hasStartedRef.current) return;
+      startAudio()
+        .then(() => {
+          hasStartedRef.current = true;
+          setIsPlaying(true);
+          setAutoplayBlocked(false);
+          detachListeners();
+        })
+        .catch((err) => {
+          // If aborted (e.g. during a scroll drag), DO NOT remove listeners!
+          // The next tap or click anywhere on the page will seamlessly retry and succeed.
+          console.debug('Audio unlock waiting for tap gesture:', err);
+        });
     };
 
-    const handleFirstGesture = () => {
-      if (hasInteractedRef.current) return;
-      hasInteractedRef.current = true;
-      if (audioRef.current) {
-        audioRef.current.muted = false;
-        playWithFade();
-      }
-      removeListeners();
+    const attachListeners = () => {
+      GESTURE_EVENTS.forEach((evt) => {
+        window.addEventListener(evt, handleUserGesture, { capture: true, passive: true });
+      });
     };
 
-    const removeListeners = () => {
-      window.removeEventListener('click', handleFirstGesture);
-      window.removeEventListener('touchstart', handleFirstGesture);
-      window.removeEventListener('scroll', handleFirstGesture);
-      window.removeEventListener('pointerdown', handleFirstGesture);
-      window.removeEventListener('mousemove', handleFirstGesture);
-      window.removeEventListener('keydown', handleFirstGesture);
+    const detachListeners = () => {
+      GESTURE_EVENTS.forEach((evt) => {
+        window.removeEventListener(evt, handleUserGesture, { capture: true });
+      });
     };
 
-    // Try immediate autoplay first
-    tryAutoplay();
-
-    // In case browser policy restricts audio until gesture, trigger on first touch, mousemove, or scroll!
-    window.addEventListener('click', handleFirstGesture, { passive: true });
-    window.addEventListener('touchstart', handleFirstGesture, { passive: true });
-    window.addEventListener('scroll', handleFirstGesture, { passive: true });
-    window.addEventListener('pointerdown', handleFirstGesture, { passive: true });
-    window.addEventListener('mousemove', handleFirstGesture, { passive: true });
-    window.addEventListener('keydown', handleFirstGesture, { passive: true });
+    // 1. Attempt immediate unmuted autoplay on load
+    // (Succeeds on iOS Safari with navigation gesture, WebViews, and high-MEI desktop browsers)
+    startAudio()
+      .then(() => {
+        hasStartedRef.current = true;
+        setIsPlaying(true);
+        setAutoplayBlocked(false);
+      })
+      .catch((err) => {
+        // Autoplay blocked by browser policy (e.g. Android Chrome)
+        console.debug('Initial autoplay restricted by browser policy; awaiting guest tap:', err);
+        setIsPlaying(false);
+        setAutoplayBlocked(true);
+        // Attach persistent capture listeners so the very first tap anywhere on the screen starts sound!
+        attachListeners();
+      });
 
     return () => {
-      removeListeners();
+      detachListeners();
       if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
       audio.removeEventListener('ended', handleEnded);
       audio.removeEventListener('error', handleError);
@@ -226,7 +233,8 @@ export function AudioProvider({ children }) {
   };
 
   const togglePlay = () => {
-    hasInteractedRef.current = true;
+    hasStartedRef.current = true;
+    setAutoplayBlocked(false);
     if (isPlaying) {
       pauseWithFade();
     } else {
@@ -255,6 +263,8 @@ export function AudioProvider({ children }) {
         setVolume,
         togglePlay,
         toggleMute,
+        startAudio,
+        autoplayBlocked,
         trackInfo: currentTrack,
         playlist: TRACKS_PLAYLIST,
         currentTrackIndex,

@@ -12,14 +12,21 @@ export default function AmbientSoundPlayer() {
     togglePlay, 
     toggleMute, 
     trackInfo, 
-    nextTrack 
+    nextTrack,
+    autoplayBlocked
   } = useAudio();
   
   const [showPrompt, setShowPrompt] = useState(false);
   const [showVolumeSlider, setShowVolumeSlider] = useState(false);
 
-  // Soft welcoming prompt on larger screens if music hasn't started yet
+  // Soft welcoming prompt for mobile (Android/iOS) and desktop if autoplay was blocked or delayed
   useEffect(() => {
+    if (isPlaying) {
+      setShowPrompt(false);
+      return;
+    }
+
+    const delay = autoplayBlocked ? 800 : 2500;
     const timer = setTimeout(() => {
       try {
         const dismissed = sessionStorage.getItem('oxygen_audio_prompt_dismissed');
@@ -27,10 +34,10 @@ export default function AmbientSoundPlayer() {
           setShowPrompt(true);
         }
       } catch (_) {}
-    }, 3000);
+    }, delay);
 
     return () => clearTimeout(timer);
-  }, [isPlaying]);
+  }, [isPlaying, autoplayBlocked]);
 
   const handleDismissPrompt = (e) => {
     e.stopPropagation();
@@ -53,7 +60,7 @@ export default function AmbientSoundPlayer() {
       aria-label="Resort Soundscape"
       className="fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-40 flex flex-col items-start pointer-events-auto select-none font-sans"
     >
-      {/* Welcoming Resort Audio Prompt Tooltip (Desktop/Tablet) */}
+      {/* Welcoming Resort Audio Prompt (Mobile & Desktop Responsive) */}
       <AnimatePresence>
         {showPrompt && !isPlaying && (
           <motion.div
@@ -61,38 +68,44 @@ export default function AmbientSoundPlayer() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.94 }}
             transition={{ type: 'spring', stiffness: 380, damping: 25 }}
-            className="hidden sm:block mb-2.5 max-w-[280px] bg-[#1A0C06]/95 backdrop-blur-2xl border border-[#C9854A]/40 rounded-2xl p-3 shadow-[0_12px_36px_rgba(0,0,0,0.7)] text-slate-200 relative overflow-hidden"
+            onClick={handlePlayAndDismiss}
+            className="mb-2.5 max-w-[calc(100vw-32px)] sm:max-w-[310px] bg-[#1A0C06]/95 backdrop-blur-2xl border border-[#C9854A]/50 rounded-2xl p-3 shadow-[0_12px_36px_rgba(0,0,0,0.8)] text-slate-200 relative overflow-hidden cursor-pointer"
           >
             {/* Ambient Warm Light Orb */}
-            <div className="absolute -top-10 -left-10 w-24 h-24 bg-[#C9854A]/15 rounded-full blur-xl pointer-events-none" />
+            <div className="absolute -top-10 -left-10 w-24 h-24 bg-[#C9854A]/20 rounded-full blur-xl pointer-events-none" />
 
             {/* Close Button */}
             <button
               onClick={handleDismissPrompt}
               aria-label="Dismiss sound prompt"
-              className="absolute top-2 right-2 p-1 rounded-full text-zinc-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+              className="absolute top-2 right-2 p-1.5 rounded-full text-zinc-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
             >
               <X className="w-3.5 h-3.5" />
             </button>
 
-            <div className="flex items-start gap-2.5 pr-4">
-              <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-[#C9854A] to-[#8C4A20] p-1.5 flex items-center justify-center shrink-0 mt-0.5 shadow-md">
+            <div className="flex items-start gap-2.5 pr-5">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#C9854A] to-[#8C4A20] p-1.5 flex items-center justify-center shrink-0 mt-0.5 shadow-md">
                 <Music className="w-4 h-4 text-[#1A0C06]" />
               </div>
               <div>
-                <span className="text-[11px] font-bold text-white uppercase tracking-wider block font-serif">
-                  Resort Ambience
-                </span>
-                <p className="text-[11px] text-[#E0C8A8] mt-0.5 leading-snug">
-                  Experience Oxygen Orbis with authentic traditional Yoruba talking drums and shekere.
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[11px] font-bold text-white uppercase tracking-wider block font-serif">
+                    Resort Ambience
+                  </span>
+                  <span className="text-[9px] bg-[#C9854A]/20 text-[#E0A86A] px-1.5 py-0.2 rounded border border-[#C9854A]/30 font-medium">
+                    YORUBA
+                  </span>
+                </div>
+                <p className="text-[11px] text-[#E0C8A8] mt-1 leading-snug">
+                  Tap anywhere on screen to experience traditional Yoruba talking drum melodies.
                 </p>
-                <button
-                  onClick={handlePlayAndDismiss}
-                  className="mt-2 text-[10px] font-bold text-[#1A0C06] bg-gradient-to-r from-[#C9854A] to-[#E0A86A] px-2.5 py-1 rounded-lg flex items-center gap-1.5 shadow-sm hover:scale-102 active:scale-98 transition-transform cursor-pointer"
-                >
-                  <Play className="w-2.5 h-2.5 fill-current" />
-                  <span>Listen Now</span>
-                </button>
+                <div className="mt-2.5 flex items-center gap-2">
+                  <span className="text-[10px] font-bold text-[#1A0C06] bg-gradient-to-r from-[#C9854A] to-[#E0A86A] px-2.5 py-1 rounded-lg flex items-center gap-1.5 shadow-sm hover:scale-102 transition-transform">
+                    <Play className="w-2.5 h-2.5 fill-current" />
+                    <span>Tap To Listen</span>
+                  </span>
+                  <span className="text-[9.5px] text-zinc-400 italic">or tap anywhere</span>
+                </div>
               </div>
             </div>
           </motion.div>
